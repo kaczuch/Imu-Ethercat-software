@@ -1,0 +1,240 @@
+/*
+ * adis.c
+ *
+ *  Created on: 16 lip 2015
+ *      Author: bkaczor
+ */
+
+#include "driverlib/ssi.h"
+#include "driverlib/sysctl.h"
+#include "inc/hw_memmap.h"
+#include <driverlib/gpio.h>
+#include "driverlib/pin_map.h"
+#include "adis.h"
+#include "user_adi.h"
+#include <inc/hw_types.h>
+
+	int kk;
+
+
+uint32_t adisRead[]=
+{
+		ADIS16400_READ_REG(ADIS16400_XGYRO_OUT),
+		ADIS16400_READ_REG(ADIS16400_YGYRO_OUT),
+		ADIS16400_READ_REG(ADIS16400_ZGYRO_OUT),
+		ADIS16400_READ_REG(ADIS16400_XACCL_OUT),
+		ADIS16400_READ_REG(ADIS16400_YACCL_OUT),
+		ADIS16400_READ_REG(ADIS16400_ZACCL_OUT),
+		ADIS16400_READ_REG(ADIS16400_DIAG_STAT)
+};
+/**
+ * Global adis value
+ */
+uint32_t adisValues[7];
+
+/**
+ * initialization of imu for work
+ */
+uint32_t adis_init(){
+	interr=false;
+	adis_io_init();
+	adis_reset();
+	return adis_self_test();
+}
+/**
+ * function initializing inputs and outputs for imu
+ */
+void adis_io_init(){
+	//enabling port D
+	//interrupt register
+	GPIOIntRegister(GPIO_PORTD_BASE,adis_interupt);
+	//Initializing GPIO
+	GPIOPinTypeGPIOInput(GPIO_PORTD_BASE,GPIO_PIN_6);
+	GPIOPinTypeGPIOOutput(GPIO_PORTD_BASE,GPIO_PIN_7);
+	//setting interrupt type
+	GPIOIntTypeSet(GPIO_PORTD_BASE,GPIO_PIN_6,GPIO_RISING_EDGE);
+
+
+	//configuring spi connection to imu
+	//enabling ssi peripherial
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_SSI0);
+	//enabling port A
+
+	//configure pins as ssi type
+	GPIOPinConfigure(GPIO_PA2_SSI0CLK);
+	GPIOPinConfigure(GPIO_PA3_SSI0FSS);
+	GPIOPinConfigure(GPIO_PA4_SSI0RX);
+	GPIOPinConfigure(GPIO_PA5_SSI0TX);
+
+	//giving ssi control ove pins
+	GPIOPinTypeSSI(GPIO_PORTA_BASE, GPIO_PIN_5 | GPIO_PIN_4 | GPIO_PIN_3 |
+	                   GPIO_PIN_2);
+
+	//configuration of ssi
+	SSIConfigSetExpClk(SSI0_BASE, SysCtlClockGet(), SSI_FRF_MOTO_MODE_3,
+	                       SSI_MODE_MASTER, 1900000, 16);
+
+
+	// Enable the SSI0 module.
+	SSIEnable(SSI0_BASE);
+
+	//enabling interupt on D port
+	GPIOIntEnable(GPIO_PORTD_BASE,GPIO_PIN_6);
+
+
+}
+/**
+ * interupt function gathering data from imu on demand
+ * */
+void adis_interupt()
+{
+	uint32_t interruptSource;
+	interruptSource =HWREG(GPIO_PORTD_BASE+0x418);
+	bool pin6=false;
+	if (interruptSource&GPIO_PIN_6){
+		pin6=true;
+	}
+	GPIOIntDisable(GPIO_PORTD_BASE,GPIO_PIN_6);
+	// becouse of buffers ned to be cleared on beginning of this function
+	GPIOIntClear(GPIO_PORTD_BASE,GPIO_PIN_6);
+	//read all the data
+	uint32_t response;
+
+	int i,j;
+	int iLength=7;
+
+	for( i=0;  i<iLength;++i)
+	{
+		SSIDataPut(SSI0_BASE,adisRead[i]);
+		/*while(SSIBusy(SSI0_BASE))
+				{
+				}*/
+
+		for(kk=0;kk<400;kk++);
+
+
+		SSIDataGet(SSI0_BASE,&adisValues[i]);
+
+
+
+
+
+
+	}
+
+	BOOL err=false;
+/*
+	for(i=1;i<12;++i)
+	{
+		if(adisValues[i]&(1<<14))
+		{
+
+			err=true;
+			break;
+		}
+	}
+	uint32_t errCode=0;
+	if (err==true)
+	{
+		while(SSIDataGetNonBlocking(SSI0_BASE,&errCode));
+		SSIDataPut(SSI0_BASE,ADIS16400_READ_REG(ADIS16400_DIAG_STAT));
+		for(kk=0;kk<600;++kk);
+			SSIDataGet(SSI0_BASE,&errCode);
+
+			SSIDataPut(SSI0_BASE,ADIS16400_READ_REG(ADIS16400_DIAG_STAT));
+			for(kk=0;kk<600;++kk);
+			SSIDataGet(SSI0_BASE,&errCode);
+
+		err=false;
+	}
+
+*/
+
+	iADI_Rot_Speed_X=adisValues[1]&0x3FFF;
+	iADI_Rot_Speed_Y=adisValues[2]&0x3FFF;
+	iADI_Rot_Speed_Z=adisValues[3]&0x3FFF;
+
+	iADI_Accel_X=adisValues[4]&0x3FFF;
+	iADI_Accel_Y=adisValues[5]&0x3FFF;
+	iADI_Accel_Z=adisValues[6]&0x3FFF;
+	//iADI_err=errCode;
+
+	AD_NewWrPd();
+
+	GPIOIntEnable(GPIO_PORTD_BASE,GPIO_PIN_6);
+}
+
+/**
+ * make self test of imu
+ */
+uint32_t adis_self_test(){
+	// disable interupts
+	GPIOIntDisable(GPIO_PORTD_BASE,GPIO_PIN_6);
+	//setting tenth bit in MSC_CTRL register in upper half shift is equal to number of bit minus 8
+	uint32_t command=ADIS16400_WRITE_REG(ADIS16400_MSC_CTRL|ADIS16400_WRITE_UPPER_HALF)|(1<<2);
+	uint32_t response;
+	SSIDataPut(SSI0_BASE,command);
+	while(SSIBusy(SSI0_BASE))
+	{
+	}
+	for(kk=0;kk<400;kk++);
+
+	SSIDataGet(SSI0_BASE, &response);
+
+	command=ADIS16400_READ_REG(ADIS16400_MSC_CTRL);
+	SSIDataPut(SSI0_BASE,command);
+	while(SSIBusy(SSI0_BASE))
+	{
+	}
+	for(kk=0;kk<400;kk++);
+
+	SSIDataGet(SSI0_BASE, &response);
+	// again to be able to get response
+	SSIDataPut(SSI0_BASE,command);
+	while(SSIBusy(SSI0_BASE))
+	{
+	}
+	for(kk=0;kk<400;kk++);
+
+	SSIDataGet(SSI0_BASE, &response);
+	//check if it is end of test
+	while(response & ADIS16400_MSC_CTRL_INT_SELF_TEST!=0){
+		SSIDataPut(SSI0_BASE,command);
+		while(SSIBusy(SSI0_BASE))
+		{
+		}
+		for(kk=0;kk<400;kk++);
+
+		SSIDataGet(SSI0_BASE, &response);
+	}
+	//we got response about our test now we can read result of it
+	command = ADIS16400_READ_REG(ADIS16400_DIAG_STAT);
+	SSIDataPut(SSI0_BASE,command);
+	while(SSIBusy(SSI0_BASE))
+	{
+	}
+	for(kk=0;kk<400;kk++);
+
+	SSIDataGet(SSI0_BASE, &response);
+	// now we send something to get out our answer
+	SSIDataPut(SSI0_BASE,command);
+	while(SSIBusy(SSI0_BASE))
+	{
+	}
+	for(kk=0;kk<400;kk++);
+
+	SSIDataGet(SSI0_BASE, &response);
+	//
+
+
+	GPIOIntEnable(GPIO_PORTD_BASE,GPIO_PIN_6);
+	return response;
+}
+/**
+ * reset imu
+ */
+void adis_reset(){
+	GPIOPinWrite(GPIO_PORTD_BASE,GPIO_PIN_6,0);
+	SysCtlDelay(2000000);
+	GPIOPinWrite(GPIO_PORTD_BASE,GPIO_PIN_6,GPIO_PIN_6);
+}
