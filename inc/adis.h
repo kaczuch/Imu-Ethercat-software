@@ -14,5 +14,6 @@ void adis_interupt();
 
 uint32_t adis_self_test();
 void adis_reset();
-
+void initTimer();
+void TimerInt();
 #endif

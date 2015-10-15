@@ -22,6 +22,8 @@
 
 #include "utils/uartstdio.h"
 
+#include "../TM4C123GH6PM/support_lib.h"
+
 
 void init_anybus_hardware()
 {
@@ -59,9 +61,19 @@ void init_anybus_hardware()
 
 void anybus_interrupt_routine()
 {
+	bool onPin6=isInterruptOnPin(GPIO_PORTA_BASE,GPIO_PIN_6);
+	bool onPin7=isInterruptOnPin(GPIO_PORTA_BASE,GPIO_PIN_7);
 	Hw_Int_disable();
+
+	if(onPin6){
+
 	ABCC_ISR();
+	}
+	if(onPin7){
+		//sync
+	}
 	Hw_Int_enable();
+
 
 }
 void anybus_SPI_SEND_Receive(void* pxSendDataBuffer, void* pxReceiveDataBuffer, UINT16 iLength)

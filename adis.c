@@ -7,6 +7,7 @@
 
 #include "driverlib/ssi.h"
 #include "driverlib/sysctl.h"
+#include "driverlib/timer.h"
 #include "inc/hw_memmap.h"
 #include <driverlib/gpio.h>
 #include "driverlib/pin_map.h"
@@ -15,7 +16,7 @@
 #include <inc/hw_types.h>
 
 	int kk;
-
+	bool wait=false;
 
 uint32_t adisRead[]=
 {
@@ -39,6 +40,7 @@ uint32_t adis_init(){
 	interr=false;
 	adis_io_init();
 	adis_reset();
+	//initTimer();
 	return adis_self_test();
 }
 /**
@@ -88,12 +90,8 @@ void adis_io_init(){
  * */
 void adis_interupt()
 {
-	uint32_t interruptSource;
-	interruptSource =HWREG(GPIO_PORTD_BASE+0x418);
-	bool pin6=false;
-	if (interruptSource&GPIO_PIN_6){
-		pin6=true;
-	}
+	bool pin6=isInterruptOnPin(GPIO_PORTD_BASE,GPIO_PIN_6);
+
 	GPIOIntDisable(GPIO_PORTD_BASE,GPIO_PIN_6);
 	// becouse of buffers ned to be cleared on beginning of this function
 	GPIOIntClear(GPIO_PORTD_BASE,GPIO_PIN_6);
@@ -110,9 +108,7 @@ void adis_interupt()
 				{
 				}*/
 
-		for(kk=0;kk<400;kk++);
-
-
+		SysCtlDelay(720);
 		SSIDataGet(SSI0_BASE,&adisValues[i]);
 
 
@@ -122,33 +118,6 @@ void adis_interupt()
 
 	}
 
-	BOOL err=false;
-/*
-	for(i=1;i<12;++i)
-	{
-		if(adisValues[i]&(1<<14))
-		{
-
-			err=true;
-			break;
-		}
-	}
-	uint32_t errCode=0;
-	if (err==true)
-	{
-		while(SSIDataGetNonBlocking(SSI0_BASE,&errCode));
-		SSIDataPut(SSI0_BASE,ADIS16400_READ_REG(ADIS16400_DIAG_STAT));
-		for(kk=0;kk<600;++kk);
-			SSIDataGet(SSI0_BASE,&errCode);
-
-			SSIDataPut(SSI0_BASE,ADIS16400_READ_REG(ADIS16400_DIAG_STAT));
-			for(kk=0;kk<600;++kk);
-			SSIDataGet(SSI0_BASE,&errCode);
-
-		err=false;
-	}
-
-*/
 
 	iADI_Rot_Speed_X=adisValues[1]&0x3FFF;
 	iADI_Rot_Speed_Y=adisValues[2]&0x3FFF;
@@ -177,7 +146,7 @@ uint32_t adis_self_test(){
 	while(SSIBusy(SSI0_BASE))
 	{
 	}
-	for(kk=0;kk<400;kk++);
+	SysCtlDelay(720);
 
 	SSIDataGet(SSI0_BASE, &response);
 
@@ -186,7 +155,7 @@ uint32_t adis_self_test(){
 	while(SSIBusy(SSI0_BASE))
 	{
 	}
-	for(kk=0;kk<400;kk++);
+	SysCtlDelay(720);
 
 	SSIDataGet(SSI0_BASE, &response);
 	// again to be able to get response
@@ -194,7 +163,7 @@ uint32_t adis_self_test(){
 	while(SSIBusy(SSI0_BASE))
 	{
 	}
-	for(kk=0;kk<400;kk++);
+	SysCtlDelay(720);
 
 	SSIDataGet(SSI0_BASE, &response);
 	//check if it is end of test
@@ -203,7 +172,7 @@ uint32_t adis_self_test(){
 		while(SSIBusy(SSI0_BASE))
 		{
 		}
-		for(kk=0;kk<400;kk++);
+		SysCtlDelay(720);
 
 		SSIDataGet(SSI0_BASE, &response);
 	}
@@ -213,15 +182,14 @@ uint32_t adis_self_test(){
 	while(SSIBusy(SSI0_BASE))
 	{
 	}
-	for(kk=0;kk<400;kk++);
-
+	SysCtlDelay(720);
 	SSIDataGet(SSI0_BASE, &response);
 	// now we send something to get out our answer
 	SSIDataPut(SSI0_BASE,command);
 	while(SSIBusy(SSI0_BASE))
 	{
 	}
-	for(kk=0;kk<400;kk++);
+	SysCtlDelay(720);
 
 	SSIDataGet(SSI0_BASE, &response);
 	//
@@ -234,7 +202,22 @@ uint32_t adis_self_test(){
  * reset imu
  */
 void adis_reset(){
-	GPIOPinWrite(GPIO_PORTD_BASE,GPIO_PIN_6,0);
+	GPIOPinWrite(GPIO_PORTD_BASE,GPIO_PIN_7,0);
 	SysCtlDelay(2000000);
-	GPIOPinWrite(GPIO_PORTD_BASE,GPIO_PIN_6,GPIO_PIN_6);
+	GPIOPinWrite(GPIO_PORTD_BASE,GPIO_PIN_7,GPIO_PIN_7);
+//	TimerIntEnable(TIMER0_BASE,TIMER_A);
+}
+void initTimer()
+{
+	TimerConfigure(TIMER0_BASE, (TIMER_CFG_SPLIT_PAIR|TIMER_CFG_A_ONE_SHOT));
+	TimerClockSourceSet(TIMER0_BASE,TIMER_CLOCK_SYSTEM);
+	TimerIntRegister(TIMER0_BASE,TIMER_A,TimerInt);
+
+}
+void TimerInt()
+{
+	TimerIntDisable(TIMER0_BASE,TIMER_A);
+	TimerIntClear(TIMER0_BASE,TIMER_A);
+	wait=false;
+	TimerIntEnable(TIMER0_BASE,TIMER_A);
 }
