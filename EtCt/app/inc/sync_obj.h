@@ -7,6 +7,7 @@
 
 #ifndef ETCT_APP_INC_SYNC_OBJ_H_
 #define ETCT_APP_INC_SYNC_OBJ_H_
+#include "abcc_sys_adapt.h"
 
 typedef struct sync_ObjectType
 {
@@ -14,7 +15,7 @@ typedef struct sync_ObjectType
   UINT8 bRevision;
   UINT16 iNumberOfInstances;
   UINT16 iHighestInstanceNo;
-}
+}sync_ObjectType;
 
 typedef struct sync_InstanceType
 {
@@ -26,7 +27,7 @@ typedef struct sync_InstanceType
   UINT32 minCyclTime;
   UINT16 syncMode;
   UINT16 supSyncMode;
-}
+}sync_InstanceType;
 
 /*------------------------------------------------------------------------------
 ** app_sObject.
