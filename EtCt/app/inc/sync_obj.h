@@ -8,7 +8,7 @@
 #ifndef ETCT_APP_INC_SYNC_OBJ_H_
 #define ETCT_APP_INC_SYNC_OBJ_H_
 #include "abcc_sys_adapt.h"
-
+#include "abp_sync.h"
 typedef struct sync_ObjectType
 {
   UINT8* acName;
@@ -43,5 +43,9 @@ extern const sync_ObjectType sync_sObject;
 **------------------------------------------------------------------------------
 */
 extern sync_InstanceType sync_sInstance;
+
+extern void SYNC_ProcessCmdMsg( ABP_MsgType* psNewMessage );
+extern void SYNC_InstanceCommand( psNewMessage );
+extern void SYNC_ObjectCommand( psNewMessage );
 
 #endif /* ETCT_APP_INC_SYNC_OBJ_H_ */
