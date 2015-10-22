@@ -45,7 +45,7 @@ extern const sync_ObjectType sync_sObject;
 extern sync_InstanceType sync_sInstance;
 
 extern void SYNC_ProcessCmdMsg( ABP_MsgType* psNewMessage );
-extern void SYNC_InstanceCommand( psNewMessage );
-extern void SYNC_ObjectCommand( psNewMessage );
+extern void SYNC_InstanceCommand(ABP_MsgType* psNewMessage );
+extern void SYNC_ObjectCommand(ABP_MsgType* psNewMessage );
 
 #endif /* ETCT_APP_INC_SYNC_OBJ_H_ */
