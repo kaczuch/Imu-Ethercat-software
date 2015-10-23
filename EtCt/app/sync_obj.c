@@ -109,15 +109,118 @@ void SYNC_InstanceCommand(ABP_MsgType* psNewMessage )
 			*(UINT32*)psNewMessage->abData = lTOlLe( sync_sInstance.supSyncMode );
 			ABP_SetMsgResponse( psNewMessage, ABP_SYNC_IA_SUPPORTED_SYNC_MODES_DS );
 			break;
-
+		default:
+			 ABP_SetMsgErrorResponse( psNewMessage, 1, ABP_ERR_UNSUP_CMD);
+			break;
 		}
 		break;
 	case ABP_CMD_SET_ATTR:
+		switch(psNewMessage->sHeader.bCmdExt0)
+		{
+		case ABP_SYNC_IA_CYCLE_TIME:
+
+			ABCC_SYS_MemCpy( sync_sInstance.cyclTime, psNewMessage->abData,ABP_SYNC_IA_CYCLE_TIME_DS );
+			ABP_SetMsgResponse( psNewMessage, 0 );
+			break;
+
+		case ABP_SYNC_IA_OUTPUT_VALID:
+			ABCC_SYS_MemCpy( sync_sInstance.outValid, psNewMessage->abData,ABP_SYNC_IA_OUTPUT_VALID_DS );
+			ABP_SetMsgResponse( psNewMessage, 0 );
+			break;
+
+		case ABP_SYNC_IA_INPUT_CAPTURE:
+			ABCC_SYS_MemCpy( sync_sInstance.inCapture, psNewMessage->abData,ABP_SYNC_IA_INPUT_CAPTURE_DS );
+			ABP_SetMsgResponse( psNewMessage, 0 );
+			break;
+
+		case ABP_SYNC_IA_OUTPUT_PROCESSING:
+			ABCC_SYS_MemCpy( sync_sInstance.outProces, psNewMessage->abData,ABP_SYNC_IA_OUTPUT_PROCESSING_DS );
+			ABP_SetMsgResponse( psNewMessage, 0 );
+			break;
+
+		case ABP_SYNC_IA_INPUT_PROCESSING:
+			ABCC_SYS_MemCpy( sync_sInstance.inProces, psNewMessage->abData,ABP_SYNC_IA_INPUT_PROCESSING_DS );
+			ABP_SetMsgResponse( psNewMessage, 0 );
+			break;
+
+		case ABP_SYNC_IA_MIN_CYCLE_TIME:
+			ABCC_SYS_MemCpy( sync_sInstance.minCyclTime, psNewMessage->abData,ABP_SYNC_IA_MIN_CYCLE_TIME_DS );
+			ABP_SetMsgResponse( psNewMessage, 0 );
+			break;
+
+		case ABP_SYNC_IA_SYNC_MODE:
+			ABCC_SYS_MemCpy( sync_sInstance.syncMode, psNewMessage->abData,ABP_SYNC_IA_SYNC_MODE_DS );
+			ABP_SetMsgResponse( psNewMessage, 0 );
+			break;
+
+		case ABP_SYNC_IA_SUPPORTED_SYNC_MODES:
+			ABCC_SYS_MemCpy( sync_sInstance.supSyncMode, psNewMessage->abData,ABP_SYNC_IA_SUPPORTED_SYNC_MODES_DS);
+			ABP_SetMsgResponse( psNewMessage, 0 );
+
+			break;
+			default:
+				 ABP_SetMsgErrorResponse( psNewMessage, 1, ABP_ERR_UNSUP_CMD);
+				break;
+
+		}
 		break;
+		default:
+			 ABP_SetMsgErrorResponse( psNewMessage, 1, ABP_ERR_UNSUP_CMD);
+			break;
 	}
 }
 
 void SYNC_ObjectCommand(ABP_MsgType* psNewMessage )
 {
+	switch(( psNewMessage->sHeader.bCmd ) & ABP_MSG_HEADER_CMD_BITS )
+	{
+	case ABP_CMD_GET_ATTR:
+		switch( psNewMessage->sHeader.bCmdExt0 )
+	    {
+		case ABP_OA_NAME:
+		{
+	         UINT16 iStrLength;
 
+	         iStrLength = (UINT16)strlen( sync_sObject.acName );
+
+	         /*
+	         ** Copy the attribute to a message.
+	         */
+	         ABCC_SYS_MemCpy( psNewMessage->abData, sync_sObject.acName, iStrLength );
+	         ABP_SetMsgResponse( psNewMessage, iStrLength );
+	         break;
+		}
+		case ABP_OA_REV:
+
+	         /*
+	         ** Copy the attribute to a message.
+	         */
+	         psNewMessage->abData[ 0 ] = sync_sObject.bRevision;
+	         ABP_SetMsgResponse( psNewMessage, ABP_UINT8_SIZEOF );
+	         break;
+		case ABP_OA_NUM_INST:
+
+	         /*
+	         ** Copy the attribute to a message.
+	         */
+	         *(UINT16*)psNewMessage->abData = iTOiLe( sync_sObject.iNumberOfInstances );
+	         ABP_SetMsgResponse( psNewMessage, ABP_UINT16_SIZEOF );
+	         break;
+		case ABP_OA_HIGHEST_INST:
+
+	         /*
+	         ** Copy the attribute to a message.
+	         */
+	         *(UINT16*)psNewMessage->abData = iTOiLe( sync_sObject.iHighestInstanceNo );
+	         ABP_SetMsgResponse( psNewMessage, ABP_UINT16_SIZEOF );
+	         break;
+		default:
+
+	         /*
+	         ** Unsupported attribute.
+	         */
+	         ABP_SetMsgErrorResponse( psNewMessage, 1, ABP_ERR_INV_CMD_EXT_0 );
+	         break;
+	    }
+	}
 }
