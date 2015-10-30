@@ -127,6 +127,8 @@ void adis_interupt()
 	iADI_Accel_Y=adisValues[5]&0x3FFF;
 	iADI_Accel_Z=adisValues[6]&0x3FFF;
 	//iADI_err=errCode;
+	stopCounting();
+	//@todo dopisz czas do œredniego czasu oczekiwania
 
 	AD_NewWrPd();
 

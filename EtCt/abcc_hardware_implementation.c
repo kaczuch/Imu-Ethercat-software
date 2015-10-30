@@ -13,6 +13,7 @@
 #include <driverlib/gpio.h>
 #include "driverlib/pin_map.h"
 #include "inc/hw_memmap.h"
+#include <driverlib/timer.h>
 /**
  * anybus include files
  */
@@ -24,7 +25,7 @@
 
 #include "../TM4C123GH6PM/support_lib.h"
 
-
+double timeOfOperation=0;
 void init_anybus_hardware()
 {
 	/**
@@ -67,14 +68,14 @@ void anybus_interrupt_routine()
 
 	if(onPin6){
 
-	ABCC_ISR();
+		ABCC_ISR();
 	}
 	if(onPin7){
-		//sync
+		Hw_SyncIntRout();
 	}
 	Hw_Int_enable();
 
-
+	initTimer3();
 }
 void anybus_SPI_SEND_Receive(void* pxSendDataBuffer, void* pxReceiveDataBuffer, UINT16 iLength)
 {
@@ -128,4 +129,34 @@ void Hw_Int_disable()
 	GPIOIntClear(GPIO_PORTA_BASE,GPIO_PIN_6);
 	GPIOIntDisable(GPIO_PORTD_BASE,GPIO_PIN_6);
 	GPIOIntClear(GPIO_PORTD_BASE,GPIO_PIN_6);
+}
+
+void Hw_SyncIntRout()
+{
+	//set timer to count time
+	startCounting();
+	//set high state to pin
+	GPIOPinWrite(GPIO_PORTC_BASE,GPIO_PIN_7,GPIO_PIN_7);
+	//start timer to 5 micro sec
+
+}
+void initTimer3() {
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER3);
+    SysCtlPeripheralReset(SYSCTL_PERIPH_TIMER3);    //
+    TimerConfigure(TIMER3_BASE, TIMER_CFG_ONE_SHOT_UP);
+    TimerControlStall(TIMER3_BASE, TIMER_A, true) ;
+}
+
+void startCounting() {
+    TimerDisable(TIMER3_BASE, TIMER_A) ;
+    TimerLoadSet(TIMER3_BASE, TIMER_A,0xFFFFFFFF) ;
+    TimerEnable(TIMER3_BASE, TIMER_A) ;
+}
+
+void stopCounting() {
+
+    TimerIntDisable(TIMER3_BASE, TIMER_TIMA_TIMEOUT);
+    TimerDisable(TIMER3_BASE, TIMER_A);
+    uint32_t count = TimerValueGet(TIMER3_BASE, TIMER_A);
+    timeOfOperation = (double)count/(double)SysCtlClockGet();  // forcing  double just in case there's an issue w compiler
 }

@@ -61,12 +61,12 @@ ect_ObjectType;
 typedef struct ect_InstanceType 
 {
    UINT32 lVendorId;  
-/* UINT32 lProductCode;       */
-/* UINT16 iMajorRevision;     */
-/* UINT16 iMinorRevision;     */
-/* UINT32 lSerialNumber;      */
-/* const UINT8* pcDeviceName; */
-/* const UINT8* pcHWVersion;  */
+ UINT32 lProductCode;
+ UINT16 iMajorRevision;
+ UINT16 iMinorRevision;
+ UINT32 lSerialNumber;
+ const UINT8* pcDeviceName;
+ const UINT8* pcHWVersion;
 } 
 ect_InstanceType;
 

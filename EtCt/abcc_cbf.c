@@ -5,6 +5,8 @@
 
 #include "ad_obj.h"        /* Application data object:   254                 */
 #include "app_obj.h"       /* Application object:        255                 */
+#include "sync_obj.h"
+#include "../nw_obj/ect.h"
 
 void ABCC_CbfUserInitReq( void )
 {
@@ -59,7 +61,18 @@ void ABCC_CbfReceiveMsg( ABP_MsgType* psReceivedMsg )
 /*   case ABP_OBJ_NUM_ASM:      *//* Assembly mapping object          */
 /*   case ABP_OBJ_NUM_MDD:      *//* Modular device                   */
 /*   case ABP_OBJ_NUM_CIPID:    *//* CIP Identity                     */
-/*   case ABP_OBJ_NUM_SYNC:     *//* Sync                             */
+ 	 case ABP_OBJ_NUM_SYNC:    /* Sync                             */
+ 		SYNC_ProcessCmdMsg(psReceivedMsg);
+ 		break;
+
+   case ABP_OBJ_NUM_ECT:
+
+        /*
+        ** We have received a command to the EtherCAT object.
+        **
+        */
+        ECT_ProcessCmdMsg( psReceivedMsg );
+        break;
 
 
 

@@ -42,13 +42,13 @@ const ect_ObjectType ect_sObject =
 
 const ect_InstanceType ect_sInstance = 
 {
-   0x0000,                          /* 1 Vendor ID.                           */   
-/* 0x0000,                       */ /* 2 Product code.                        */
-/* 0,                            */ /* 3a Major revision.                     */
-/* 0,                            */ /* 3b Minor revision.                     */
-/* 0,                            */ /* 5 Serial number.                       */
-/* "Abc",                        */ /* 6 Manufacturer device name.            */
-/* "x.yy"                        */ /* 7 Manufacturer hardware version.       */
+   0x0021,                          /* 1 Vendor ID.                           */
+   0x0001,                        	/* 2 Product code.                        */
+   1,                             	/* 3a Major revision.                     */
+   1,                             	/* 3b Minor revision.                     */
+   1,                             	/* 5 Serial number.                       */
+   "EtctIMU",                   	/* 6 Manufacturer device name.            */
+   "0.1"                         	/* 7 Manufacturer hardware version.       */
 };
 
 
@@ -124,87 +124,87 @@ void ect_InstanceCommand( ABP_MsgType* psNewMessage )
          ABP_SetMsgResponse( psNewMessage, ABP_ECT_IA_VENDOR_ID_DS );
          break;
 
-    /*case ABP_ECT_IA_PRODUCT_CODE:
+    case ABP_ECT_IA_PRODUCT_CODE:
 
-         **
+         /**
          ** Copy the 2nd Instance 1 attribute (Product code) to the message.
-		   **
+		   ***/
 		   *(UINT32*)psNewMessage->abData = lTOlLe( ect_sInstance.lProductCode );
 		   ABP_SetMsgResponse( psNewMessage, ABP_ECT_IA_PRODUCT_CODE_DS );
-         break;*/
+         break;
 
-    /*case ABP_ECT_IA_MAJOR_REV:	      
+    case ABP_ECT_IA_MAJOR_REV:
 		 
-         ** 
+         /**
 		   ** Copy the 3rd Instance 1 attribute (Major revision) to the message.
-		   **         
+		   **         */
 		   *(UINT16*)psNewMessage->abData = iTOiLe( ect_sInstance.iMajorRevision );		
 		   ABP_SetMsgResponse( psNewMessage, ABP_ECT_IA_MAJOR_REV_DS );
-		   break;*/
+		   break;
 
-    /*case ABP_ECT_IA_MINOR_REV:	
+    case ABP_ECT_IA_MINOR_REV:
 
-         ** 
+         /**
 		   ** Copy the 4th Instance 1 attribute (Minor revision) to the message.
-		   **         
+		   **         */
 		   *(UINT16*)psNewMessage->abData = iTOiLe( ect_sInstance.iMinorRevision );
 		   ABP_SetMsgResponse( psNewMessage, ABP_ECT_IA_MINOR_REV_DS );
-		   break;*/
+		   break;
 
-    /*case ABP_ECT_IA_SERIAL_NUMBER:
+    case ABP_ECT_IA_SERIAL_NUMBER:
 
-         **
+         /**
 		   ** Copy the 5th Instance 1 attribute (Serial number) to the message.
-		   **
+		   ***/
          *(UINT32*)psNewMessage->abData = lTOlLe( ect_sInstance.lSerialNumber );
          ABP_SetMsgResponse( psNewMessage, ABP_ECT_IA_SERIAL_NUMBER_DS );
-		   break;*/
+		   break;
 
-    /*case ABP_ECT_IA_MANF_DEV_NAME:
+    case ABP_ECT_IA_MANF_DEV_NAME:
       {
          UINT16 iStrLength;
 
          iStrLength = (UINT16)strlen( ect_sInstance.pcDeviceName );
-
+         /*
          ** 
          ** The maximum number of elements allowed in the array should not be
          ** checked here. It should be checked earlier...
-         **         
+         **/
          if( iStrLength > ABP_ECT_IA_MANF_DEV_NAME_MAX_DS )
          {
             iStrLength = ABP_ECT_IA_MANF_DEV_NAME_MAX_DS;
          }
 
-         ** 
+         /**
          ** Copy the 6th Instance 1 attribute (Manufacturer device name) to the message.
-         **         
+         **/
          ABCC_SYS_MemCpy( psNewMessage->abData, ect_sInstance.pcDeviceName, iStrLength );
          ABP_SetMsgResponse( psNewMessage, (UINT8)iStrLength );
          break;
-      }*/
+      }
 
-    /*case ABP_ECT_IA_MANF_HW_VER:
+    case ABP_ECT_IA_MANF_HW_VER:
       {
          UINT16 iStrLength;
 
          iStrLength = (UINT16)strlen( ect_sInstance.pcHWVersion );
 
-         ** 
+         /**
          ** The maximum number of elements allowed in the array should not be
          ** checked here. It should be checked earlier...
-         **         
+         **/
          if( iStrLength > ABP_ECT_IA_MANF_HW_VER_MAX_DS )
          {
             iStrLength = ABP_ECT_IA_MANF_HW_VER_MAX_DS;
          }
 
-         ** 
+         /**
          ** Copy the 7th Instance 1 attribute (Manufacturer hardware version) to the message.
-         **         
+         **/
          ABCC_SYS_MemCpy( psNewMessage->abData, ect_sInstance.pcHWVersion, iStrLength );
          ABP_SetMsgResponse( psNewMessage, (UINT8)iStrLength );
          break;     
-      }*/
+      }
       
       case ABP_ECT_IA_MANF_SW_VER:
       case ABP_ECT_IA_ENUM_ADIS:

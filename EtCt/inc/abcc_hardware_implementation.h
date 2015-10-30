@@ -21,6 +21,9 @@ void Hw_Release_Reset();
 
 void Hw_Int_enable();
 void Hw_Int_disable();
-
+void Hw_SyncIntRout();
+void initTimer();
+void startCounting();
+void stopCounting();
 
 #endif /* ETCT_ABCC_HARDWARE_IMPLEMENTATION_H_ */
