@@ -143,9 +143,13 @@ int main(void)
 #if defined(TARGET_IS_TM4C129_RA0) ||                                         \
 	defined(TARGET_IS_TM4C129_RA1) ||                                         \
     defined(TARGET_IS_TM4C129_RA2)
-    ui32SysClock = SysCtlClockFreqSet((SYSCTL_XTAL_25MHZ |
+    /*ui32SysClock = SysCtlClockFreqSet((SYSCTL_XTAL_25MHZ |
                                        SYSCTL_OSC_MAIN |
                                        SYSCTL_USE_OSC), 25000000);
+    */
+    SysCtlClockFreqSet(SYSCTL_OSC_INT | SYSCTL_USE_PLL | SYSCTL_CFG_VCO_320,
+                     40000000);
+
 #else
     SysCtlClockSet(SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN |
                    SYSCTL_XTAL_16MHZ);

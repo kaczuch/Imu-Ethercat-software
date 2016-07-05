@@ -20,17 +20,19 @@
 #include "abcc_sys_adapt.h"
 #include "abcc_sys_adapt_spi.h"
 #include "abcc.h"
+#include "sync_obj.h"
 
 #include "utils/uartstdio.h"
 
 #include "../TM4C123GH6PM/support_lib.h"
 
-double timeOfOperation=0;
+double latency=0;
+int cycles=1;
 void init_anybus_hardware()
 {
 	/**
 	 * SSI 2 enabling sequence
-	 */
+
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_SSI2);
 	GPIOPinConfigure(GPIO_PB4_SSI2CLK);
 	GPIOPinConfigure(GPIO_PB5_SSI2FSS);
@@ -46,7 +48,7 @@ void init_anybus_hardware()
 	SSIEnable(SSI2_BASE);
 	/**
 	 * GPIO configuration
-	 */
+
 
 	GPIOIntRegister(GPIO_PORTA_BASE,anybus_interrupt_routine);
 
@@ -57,6 +59,7 @@ void init_anybus_hardware()
 	GPIOPinTypeGPIOOutput(GPIO_PORTB_BASE,GPIO_PIN_2);
 
 	GPIOIntTypeSet(GPIO_PORTA_BASE,GPIO_PIN_6,GPIO_FALLING_EDGE);
+	*/
 
 }
 
@@ -154,9 +157,15 @@ void startCounting() {
 }
 
 void stopCounting() {
-
+	uint32_t count = TimerValueGet(TIMER3_BASE, TIMER_A);
     TimerIntDisable(TIMER3_BASE, TIMER_TIMA_TIMEOUT);
     TimerDisable(TIMER3_BASE, TIMER_A);
-    uint32_t count = TimerValueGet(TIMER3_BASE, TIMER_A);
-    timeOfOperation = (double)count/(double)SysCtlClockGet();  // forcing  double just in case there's an issue w compiler
+    if(count>0){
+    cycles++;
+		if (cycles<100000){
+			latency = (double)count/(double)SysCtlClockGet();  // forcing  double just in case there's an issue w compiler
+			sync_sInstance.inProces=sync_sInstance.inProces+(latency-sync_sInstance.inProces)/cycles;
+		}
+    }
+
 }

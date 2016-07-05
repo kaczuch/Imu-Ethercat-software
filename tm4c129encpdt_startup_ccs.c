@@ -1,30 +1,28 @@
 //*****************************************************************************
 //
-// startup_ccs.c - Startup code for use with TI's Code Composer Studio.
+// Startup code for use with TI's Code Composer Studio.
 //
-// Copyright (c) 2012-2015 Texas Instruments Incorporated.  All rights reserved.
+// Copyright (c) 2011-2014 Texas Instruments Incorporated.  All rights reserved.
 // Software License Agreement
 // 
+// Software License Agreement
+//
 // Texas Instruments (TI) is supplying this software for use solely and
 // exclusively on TI's microcontroller products. The software is owned by
 // TI and/or its suppliers, and is protected under applicable copyright
 // laws. You may not combine this software with "viral" open-source
 // software in order to form a larger program.
-// 
+//
 // THIS SOFTWARE IS PROVIDED "AS IS" AND WITH ALL FAULTS.
 // NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT
 // NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
 // A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE. TI SHALL NOT, UNDER ANY
 // CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR CONSEQUENTIAL
 // DAMAGES, FOR ANY REASON WHATSOEVER.
-// 
-// This is part of revision 2.1.1.71 of the EK-TM4C123GXL Firmware Package.
 //
 //*****************************************************************************
 
 #include <stdint.h>
-#include "inc/hw_nvic.h"
-#include "inc/hw_types.h"
 
 //*****************************************************************************
 //
@@ -50,6 +48,13 @@ extern void _c_int00(void);
 //
 //*****************************************************************************
 extern uint32_t __STACK_TOP;
+
+//*****************************************************************************
+//
+// External declarations for the interrupt handlers used by the application.
+//
+//*****************************************************************************
+// To be added by user
 
 //*****************************************************************************
 //
@@ -116,11 +121,9 @@ void (* const g_pfnVectors[])(void) =
     IntDefaultHandler,                      // Timer 3 subtimer A
     IntDefaultHandler,                      // Timer 3 subtimer B
     IntDefaultHandler,                      // I2C1 Master and Slave
-    IntDefaultHandler,                      // Quadrature Encoder 1
     IntDefaultHandler,                      // CAN0
     IntDefaultHandler,                      // CAN1
-    0,                                      // Reserved
-    0,                                      // Reserved
+    IntDefaultHandler,                      // Ethernet
     IntDefaultHandler,                      // Hibernate
     IntDefaultHandler,                      // USB0
     IntDefaultHandler,                      // PWM Generator 3
@@ -130,8 +133,7 @@ void (* const g_pfnVectors[])(void) =
     IntDefaultHandler,                      // ADC1 Sequence 1
     IntDefaultHandler,                      // ADC1 Sequence 2
     IntDefaultHandler,                      // ADC1 Sequence 3
-    0,                                      // Reserved
-    0,                                      // Reserved
+    IntDefaultHandler,                      // External Bus Interface 0
     IntDefaultHandler,                      // GPIO Port J
     IntDefaultHandler,                      // GPIO Port K
     IntDefaultHandler,                      // GPIO Port L
@@ -142,48 +144,12 @@ void (* const g_pfnVectors[])(void) =
     IntDefaultHandler,                      // UART5 Rx and Tx
     IntDefaultHandler,                      // UART6 Rx and Tx
     IntDefaultHandler,                      // UART7 Rx and Tx
-    0,                                      // Reserved
-    0,                                      // Reserved
-    0,                                      // Reserved
-    0,                                      // Reserved
     IntDefaultHandler,                      // I2C2 Master and Slave
     IntDefaultHandler,                      // I2C3 Master and Slave
     IntDefaultHandler,                      // Timer 4 subtimer A
     IntDefaultHandler,                      // Timer 4 subtimer B
-    0,                                      // Reserved
-    0,                                      // Reserved
-    0,                                      // Reserved
-    0,                                      // Reserved
-    0,                                      // Reserved
-    0,                                      // Reserved
-    0,                                      // Reserved
-    0,                                      // Reserved
-    0,                                      // Reserved
-    0,                                      // Reserved
-    0,                                      // Reserved
-    0,                                      // Reserved
-    0,                                      // Reserved
-    0,                                      // Reserved
-    0,                                      // Reserved
-    0,                                      // Reserved
-    0,                                      // Reserved
-    0,                                      // Reserved
-    0,                                      // Reserved
-    0,                                      // Reserved
     IntDefaultHandler,                      // Timer 5 subtimer A
     IntDefaultHandler,                      // Timer 5 subtimer B
-    IntDefaultHandler,                      // Wide Timer 0 subtimer A
-    IntDefaultHandler,                      // Wide Timer 0 subtimer B
-    IntDefaultHandler,                      // Wide Timer 1 subtimer A
-    IntDefaultHandler,                      // Wide Timer 1 subtimer B
-    IntDefaultHandler,                      // Wide Timer 2 subtimer A
-    IntDefaultHandler,                      // Wide Timer 2 subtimer B
-    IntDefaultHandler,                      // Wide Timer 3 subtimer A
-    IntDefaultHandler,                      // Wide Timer 3 subtimer B
-    IntDefaultHandler,                      // Wide Timer 4 subtimer A
-    IntDefaultHandler,                      // Wide Timer 4 subtimer B
-    IntDefaultHandler,                      // Wide Timer 5 subtimer A
-    IntDefaultHandler,                      // Wide Timer 5 subtimer B
     IntDefaultHandler,                      // FPU
     0,                                      // Reserved
     0,                                      // Reserved
@@ -191,9 +157,8 @@ void (* const g_pfnVectors[])(void) =
     IntDefaultHandler,                      // I2C5 Master and Slave
     IntDefaultHandler,                      // GPIO Port M
     IntDefaultHandler,                      // GPIO Port N
-    IntDefaultHandler,                      // Quadrature Encoder 2
     0,                                      // Reserved
-    0,                                      // Reserved
+    IntDefaultHandler,                      // Tamper
     IntDefaultHandler,                      // GPIO Port P (Summary or P0)
     IntDefaultHandler,                      // GPIO Port P1
     IntDefaultHandler,                      // GPIO Port P2
@@ -212,11 +177,26 @@ void (* const g_pfnVectors[])(void) =
     IntDefaultHandler,                      // GPIO Port Q7
     IntDefaultHandler,                      // GPIO Port R
     IntDefaultHandler,                      // GPIO Port S
-    IntDefaultHandler,                      // PWM 1 Generator 0
-    IntDefaultHandler,                      // PWM 1 Generator 1
-    IntDefaultHandler,                      // PWM 1 Generator 2
-    IntDefaultHandler,                      // PWM 1 Generator 3
-    IntDefaultHandler                       // PWM 1 Fault
+    IntDefaultHandler,                      // SHA/MD5 0
+    IntDefaultHandler,                      // AES 0
+    IntDefaultHandler,                      // DES3DES 0
+    IntDefaultHandler,                      // LCD Controller 0
+    IntDefaultHandler,                      // Timer 6 subtimer A
+    IntDefaultHandler,                      // Timer 6 subtimer B
+    IntDefaultHandler,                      // Timer 7 subtimer A
+    IntDefaultHandler,                      // Timer 7 subtimer B
+    IntDefaultHandler,                      // I2C6 Master and Slave
+    IntDefaultHandler,                      // I2C7 Master and Slave
+    IntDefaultHandler,                      // HIM Scan Matrix Keyboard 0
+    IntDefaultHandler,                      // One Wire 0
+    IntDefaultHandler,                      // HIM PS/2 0
+    IntDefaultHandler,                      // HIM LED Sequencer 0
+    IntDefaultHandler,                      // HIM Consumer IR 0
+    IntDefaultHandler,                      // I2C8 Master and Slave
+    IntDefaultHandler,                      // I2C9 Master and Slave
+    IntDefaultHandler,                      // GPIO Port T
+    IntDefaultHandler,                      // Fan 1
+    0,                                      // Reserved
 };
 
 //*****************************************************************************

@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include "adis_regs.h"
+#include "abcc_hardware_implementation.h"
 
 bool interr;
 

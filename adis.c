@@ -14,6 +14,7 @@
 #include "adis.h"
 #include "user_adi.h"
 #include <inc/hw_types.h>
+#include "TM4C123GH6PM\support_lib.h"
 
 	int kk;
 	bool wait=false;
@@ -49,12 +50,12 @@ uint32_t adis_init(){
 void adis_io_init(){
 	//enabling port D
 	//interrupt register
-	GPIOIntRegister(GPIO_PORTD_BASE,adis_interupt);
+	GPIOIntRegister(GPIO_PORTB_BASE,intPortBRoutine);
 	//Initializing GPIO
-	GPIOPinTypeGPIOInput(GPIO_PORTD_BASE,GPIO_PIN_6);
-	GPIOPinTypeGPIOOutput(GPIO_PORTD_BASE,GPIO_PIN_7);
+	GPIOPinTypeGPIOInput(GPIO_PORTB_BASE,GPIO_PIN_4);
+	GPIOPinTypeGPIOOutput(GPIO_PORTB_BASE,GPIO_PIN_1);
 	//setting interrupt type
-	GPIOIntTypeSet(GPIO_PORTD_BASE,GPIO_PIN_6,GPIO_RISING_EDGE);
+	GPIOIntTypeSet(GPIO_PORTB_BASE,GPIO_PIN_4,GPIO_RISING_EDGE);
 
 
 	//configuring spi connection to imu
@@ -65,8 +66,8 @@ void adis_io_init(){
 	//configure pins as ssi type
 	GPIOPinConfigure(GPIO_PA2_SSI0CLK);
 	GPIOPinConfigure(GPIO_PA3_SSI0FSS);
-	GPIOPinConfigure(GPIO_PA4_SSI0RX);
-	GPIOPinConfigure(GPIO_PA5_SSI0TX);
+	GPIOPinConfigure(GPIO_PA4_SSI0XDAT0);
+	GPIOPinConfigure(GPIO_PA5_SSI0XDAT1);
 
 	//giving ssi control ove pins
 	GPIOPinTypeSSI(GPIO_PORTA_BASE, GPIO_PIN_5 | GPIO_PIN_4 | GPIO_PIN_3 |
@@ -81,7 +82,7 @@ void adis_io_init(){
 	SSIEnable(SSI0_BASE);
 
 	//enabling interupt on D port
-	GPIOIntEnable(GPIO_PORTD_BASE,GPIO_PIN_6);
+	GPIOIntEnable(GPIO_PORTB_BASE,GPIO_PIN_4);
 
 
 }
@@ -90,11 +91,11 @@ void adis_io_init(){
  * */
 void adis_interupt()
 {
-	bool pin6=isInterruptOnPin(GPIO_PORTD_BASE,GPIO_PIN_6);
+	bool pin6=isInterruptOnPin(GPIO_PORTB_BASE,GPIO_PIN_4);
 
-	GPIOIntDisable(GPIO_PORTD_BASE,GPIO_PIN_6);
+	GPIOIntDisable(GPIO_PORTB_BASE,GPIO_PIN_4);
 	// becouse of buffers ned to be cleared on beginning of this function
-	GPIOIntClear(GPIO_PORTD_BASE,GPIO_PIN_6);
+	GPIOIntClear(GPIO_PORTB_BASE,GPIO_PIN_4);
 	//read all the data
 	uint32_t response;
 
@@ -110,11 +111,6 @@ void adis_interupt()
 
 		SysCtlDelay(720);
 		SSIDataGet(SSI0_BASE,&adisValues[i]);
-
-
-
-
-
 
 	}
 
@@ -132,7 +128,7 @@ void adis_interupt()
 
 	AD_NewWrPd();
 
-	GPIOIntEnable(GPIO_PORTD_BASE,GPIO_PIN_6);
+	GPIOIntEnable(GPIO_PORTB_BASE,GPIO_PIN_4);
 }
 
 /**
@@ -140,7 +136,7 @@ void adis_interupt()
  */
 uint32_t adis_self_test(){
 	// disable interupts
-	GPIOIntDisable(GPIO_PORTD_BASE,GPIO_PIN_6);
+	GPIOIntDisable(GPIO_PORTB_BASE,GPIO_PIN_4);
 	//setting tenth bit in MSC_CTRL register in upper half shift is equal to number of bit minus 8
 	uint32_t command=ADIS16400_WRITE_REG(ADIS16400_MSC_CTRL|ADIS16400_WRITE_UPPER_HALF)|(1<<2);
 	uint32_t response;
@@ -197,7 +193,7 @@ uint32_t adis_self_test(){
 	//
 
 
-	GPIOIntEnable(GPIO_PORTD_BASE,GPIO_PIN_6);
+	GPIOIntEnable(GPIO_PORTB_BASE,GPIO_PIN_4);
 	return response;
 }
 /**

@@ -9,4 +9,5 @@
 	<rts value="libc.a"/>
 	<createSlaveProjects value=""/>
 	<isTargetManual value="true"/>
+	<connection value="common/targetdb/connections/TIXDS100v2_Connection.xml"/>
 </projectOptions>
