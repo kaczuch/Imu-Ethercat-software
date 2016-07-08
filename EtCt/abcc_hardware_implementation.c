@@ -8,6 +8,7 @@
 /**
  * platform specyfic include files
  */
+#include "driverlib/epi.h"
 #include "driverlib/ssi.h"
 #include "driverlib/sysctl.h"
 #include <driverlib/gpio.h>
@@ -18,7 +19,7 @@
  * anybus include files
  */
 #include "abcc_sys_adapt.h"
-#include "abcc_sys_adapt_spi.h"
+#include "abcc_sys_adapt_par.h"
 #include "abcc.h"
 #include "sync_obj.h"
 
@@ -30,6 +31,37 @@ double latency=0;
 int cycles=1;
 void init_anybus_hardware()
 {
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_EPI0);
+	//
+	// Set the EPI divider.
+	//
+	EPIDividerSet(EPI0_BASE, 2);
+	//
+	// Select SDRAM mode.
+	//
+	EPIModeSet(EPI0_BASE, EPI_MODE_HB8);
+	//
+	// Configure SDRAM mode.
+	//
+	EPIConfigHB8Set(EPI0_BASE, (EPI_HB8_MODE_ADDEMUX |
+			EPI_HB8_CSCFG_ALE_DUAL_CS //|EPI_HB8_WRWAIT_3|EPI_HB8_RDWAIT_3
+			|EPI_HB8_WORD_ACCESS), 255);
+	//
+	// Set the address map.
+	//
+	EPIAddressMapSet(EPI0_BASE, EPI_ADDR_PER_SIZE_64KB| EPI_ADDR_PER_BASE_A | EPI_ADDR_RAM_SIZE_64KB | EPI_ADDR_RAM_BASE_6);
+	//
+	// Wait for the EPI initialization to complete.
+	//
+	//while(HWREG(EPI0_BASE + EPI_O_STAT) &  EPI_STAT_INITSEQ)
+	//{
+	//
+	// Wait for SDRAM initialization to complete.
+	//
+	//}
+	//
+	// At this point, the SDRAM is accessible and available for use.
+	//
 	/**
 	 * SSI 2 enabling sequence
 
@@ -48,21 +80,21 @@ void init_anybus_hardware()
 	SSIEnable(SSI2_BASE);
 	/**
 	 * GPIO configuration
+	 */
+
+	//GPIOIntRegister(GPIO_PORTB_BASE,anybus_interrupt_routine);
 
 
-	GPIOIntRegister(GPIO_PORTA_BASE,anybus_interrupt_routine);
+	GPIOPadConfigSet(GPIO_PORTA_BASE,GPIO_PIN_0,GPIO_STRENGTH_8MA,GPIO_PIN_TYPE_STD);
 
-
-	GPIOPadConfigSet(GPIO_PORTB_BASE,GPIO_PIN_2,GPIO_STRENGTH_8MA,GPIO_PIN_TYPE_STD);
-
-	GPIOPinTypeGPIOInput(GPIO_PORTA_BASE,GPIO_PIN_7|GPIO_PIN_6);
-	GPIOPinTypeGPIOOutput(GPIO_PORTB_BASE,GPIO_PIN_2);
+	GPIOPinTypeGPIOInput(GPIO_PORTB_BASE,GPIO_PIN_0);
+	GPIOPinTypeGPIOOutput(GPIO_PORTA_BASE,GPIO_PIN_0);
 
 	GPIOIntTypeSet(GPIO_PORTA_BASE,GPIO_PIN_6,GPIO_FALLING_EDGE);
-	*/
+
 
 }
-
+/*
 void anybus_interrupt_routine()
 {
 	bool onPin6=isInterruptOnPin(GPIO_PORTA_BASE,GPIO_PIN_6);
@@ -110,28 +142,28 @@ void anybus_SPI_SEND_Receive(void* pxSendDataBuffer, void* pxReceiveDataBuffer, 
 
 	}
 
-}
+}*/
 void Hw_Reset()
 {
-	GPIOPinWrite(GPIO_PORTB_BASE,GPIO_PIN_2,0);
+	GPIOPinWrite(GPIO_PORTA_BASE,GPIO_PIN_0,0);
 }
 void Hw_Release_Reset()
 {
-	GPIOPinWrite(GPIO_PORTB_BASE,GPIO_PIN_2,GPIO_PIN_2);
+	GPIOPinWrite(GPIO_PORTA_BASE,GPIO_PIN_0,GPIO_PIN_0);
 }
 
 
 void Hw_Int_enable()
 {
-	GPIOIntEnable(GPIO_PORTA_BASE,GPIO_PIN_6);
-	GPIOIntEnable(GPIO_PORTD_BASE,GPIO_PIN_6);
+	GPIOIntEnable(GPIO_PORTB_BASE,GPIO_PIN_0);
+	//GPIOIntEnable(GPIO_PORTD_BASE,GPIO_PIN_6);
 }
 void Hw_Int_disable()
 {
-	GPIOIntDisable(GPIO_PORTA_BASE,GPIO_PIN_6);
-	GPIOIntClear(GPIO_PORTA_BASE,GPIO_PIN_6);
-	GPIOIntDisable(GPIO_PORTD_BASE,GPIO_PIN_6);
-	GPIOIntClear(GPIO_PORTD_BASE,GPIO_PIN_6);
+	GPIOIntDisable(GPIO_PORTB_BASE,GPIO_PIN_0);
+	GPIOIntClear(GPIO_PORTB_BASE,GPIO_PIN_0);
+	//GPIOIntDisable(GPIO_PORTD_BASE,GPIO_PIN_6);
+	//GPIOIntClear(GPIO_PORTD_BASE,GPIO_PIN_6);
 }
 
 void Hw_SyncIntRout()

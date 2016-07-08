@@ -148,7 +148,7 @@ int main(void)
                                        SYSCTL_USE_OSC), 25000000);
     */
     SysCtlClockFreqSet(SYSCTL_OSC_INT | SYSCTL_USE_PLL | SYSCTL_CFG_VCO_320,
-                     40000000);
+                     80000000);
 
 #else
     SysCtlClockSet(SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN |
@@ -178,6 +178,13 @@ int main(void)
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOD);
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOC);
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOG);
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOK);
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOL);
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOM);
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOP);
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOQ);
 	iADI_err=adis_init();
 	init_anybus_hardware();
 /*

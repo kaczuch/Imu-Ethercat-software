@@ -12,6 +12,7 @@
 <stringAttribute key="com.ti.ccstudio.debug.debugModel.MRU_PROGRAM.Texas Instruments XDS100v2 USB Debug Probe/CORTEX_M4_0" value="C:/Users\bkaczor\ccsworkspace\hello\Debug\hello.out"/>
 <mapAttribute key="com.ti.ccstudio.debug.ui.displayFormats">
 <mapEntry key="Stellaris In-Circuit Debug Interface_0/CORTEX_M4_0@##separator##@0" value="32-Bit Hex - TI Style"/>
+<mapEntry key="Texas Instruments XDS100v2 USB Debug Probe/CORTEX_M4_0@##separator##@0" value="32-Bit Hex - TI Style"/>
 </mapAttribute>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
 <listEntry value="/hello"/>

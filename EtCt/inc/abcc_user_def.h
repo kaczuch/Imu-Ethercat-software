@@ -7,7 +7,7 @@
 #ifndef ETCT_ABCC_USER_DEF_H_
 #define ETCT_ABCC_USER_DEF_H_
 
-#define ABCC_USER_DRV_SPI
+#define ABCC_USER_DRV_PARALLEL
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -33,6 +33,7 @@
 ********************************************************************************
 */
 
+
 #ifdef ABCC_USER_DRV_SPI
 
 #define ABCC_USER_INT_ENABLED
@@ -40,6 +41,15 @@
 #define ABCC_USER_SPI_MSG_FRAG_LEN                   ( 2 )
 #define ABCC_USER_WD_TIMEOUT_MS                      ( 100 )
 #endif
+/*
+ * paralel specyfic defines
+ * */
+#ifdef ABCC_USER_DRV_PARALLEL
+#define ABCC_USER_INT_ENABLED
+#define ABCC_USER_INT_ENABLE_MASK                    ( ABP_INTMASK_RDPDIEN | ABP_INTMASK_STATUSIEN | ABP_INTMASK_RDMSGIEN | ABP_INTMASK_WRMSGIEN | ABP_INTMASK_ANBRIEN  )
 
+#define ABCC_USER_MEMORY_MAPPED_ACCESS
+#define ABCC_USER_PARALLEL_BASE_ADR             			( 0x60000000 )
 
+#endif
 #endif /* ETCT_ABCC_USER_DEF_H_ */

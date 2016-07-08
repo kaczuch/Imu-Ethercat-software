@@ -7,6 +7,7 @@
 #include "../TM4C123GH6PM/support_lib.h"
 #include "../inc/adis.h"
 #include "abcc_hardware_implementation.h"
+#include "abcc.h"
 
 bool isInterruptOnPin(uint32_t port,uint32_t PinNr){
 	uint32_t interruptSource;
@@ -24,7 +25,9 @@ void intPortBRoutine(){
 
 
 	if(isInterruptOnPin(GPIO_PORTB_BASE,GPIO_PIN_0)){
-
+		Hw_Int_disable();
+		ABCC_ISR();
+		Hw_Int_enable();
 	}
 	if(isInterruptOnPin(GPIO_PORTB_BASE,GPIO_PIN_1)){
 
