@@ -21,8 +21,6 @@ bool isInterruptOnPin(uint32_t port,uint32_t PinNr){
 }
 
 void intPortBRoutine(){
-	Hw_Int_disable();
-
 
 	if(isInterruptOnPin(GPIO_PORTB_BASE,GPIO_PIN_0)){
 		Hw_Int_disable();
@@ -50,6 +48,5 @@ void intPortBRoutine(){
 	if(isInterruptOnPin(GPIO_PORTB_BASE,GPIO_PIN_7)){
 
 	}
-	Hw_Int_enable();
 
 }

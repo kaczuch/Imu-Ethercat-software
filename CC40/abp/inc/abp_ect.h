@@ -93,6 +93,12 @@
 #define ABP_ECT_IA_RD_PD_ASSY_INST_TRANS  12
 #define ABP_ECT_IA_ADI_TRANS              13
 
+#define ABP_ECT_IA_OBJ_SUB_TRANS          15
+#define ABP_ECT_IA_ENABLE_FOE             16
+#define ABP_ECT_IA_ENABLE_EOE             17
+#define ABP_ECT_IA_CHANGE_SR_SWITCH       18
+#define ABP_ECT_IA_SET_DEV_ID_AS_CSA      19
+
 
 /*------------------------------------------------------------------------------
 **
@@ -116,6 +122,12 @@
 #define ABP_ECT_IA_WR_PD_ASSY_INST_TRANS_MAX_DS 1524
 #define ABP_ECT_IA_RD_PD_ASSY_INST_TRANS_MAX_DS 1524
 #define ABP_ECT_IA_ADI_TRANS_MAX_DS             1524
+#define ABP_ECT_IA_OBJ_SUB_TRANS_MAX_DS         1524
+#define ABP_ECT_IA_ENABLE_FOE_DS                ABP_BOOL_SIZEOF
+#define ABP_ECT_IA_ENABLE_EOE_DS                ABP_BOOL_SIZEOF
+#define ABP_ECT_IA_CHANGE_SR_SWITCH_DS          ABP_BOOL_SIZEOF
+#define ABP_ECT_IA_SET_DEV_ID_AS_CSA_DS         ABP_BOOL_SIZEOF
+
 
 /*******************************************************************************
 **

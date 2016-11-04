@@ -16,10 +16,12 @@
 /**
  * anybus include files
  */
-#include "abcc_sys_adapt.h"
+//#include "abcc_sys_adapt.h"
 #include "abcc_sys_adapt_par.h"
 #include "abp.h"
 
+static UINT8    sys_abReadProcessData[ ABCC_USER_MAX_PROCESS_DATA_SIZE ];  /* Process data byte array. */
+static UINT8    sys_abWriteProcessData[ ABCC_USER_MAX_PROCESS_DATA_SIZE ]; /* Process data byte array. */
 
 BOOL ABCC_SYS_Init( void )
 {
@@ -67,6 +69,7 @@ void ABCC_SYS_SpiSendReceive( void* pxSendDataBuffer, void* pxReceiveDataBuffer,
 */
 void ABCC_SYS_ParallelRead( UINT16 iMemOffset, UINT8* pbData, UINT16 iLength )
 {
+	memcpy(pbData, (void*)(ABCC_USER_PARALLEL_BASE_ADR +iMemOffset), iLength);
 }
 
 UINT8 ABCC_SYS_ParallelRead8( UINT16 iMemOffset )
@@ -80,6 +83,7 @@ UINT16 ABCC_SYS_ParallelRead16( UINT16 iMemOffset )
 
 void ABCC_SYS_ParallelWrite( UINT16 iMemOffset, UINT8* pbData, UINT16 iLength )
 {
+	memcpy((void*)(ABCC_USER_PARALLEL_BASE_ADR +iMemOffset),pbData, iLength);
 }
 
 void ABCC_SYS_ParallelWrite8( UINT16 iMemOffset, UINT8 pbData )
@@ -134,13 +138,14 @@ BOOL ABCC_SYS_ModuleDetect( void )
 */
 UINT8* ABCC_SYS_ParallelGetRdPdBuffer( void )
 {
+   return sys_abReadProcessData;
 }
 
 
 UINT8* ABCC_SYS_ParallelGetWrPdBuffer( void )
 {
+   return sys_abWriteProcessData;
 }
-
 
 /*
 void ABCC_SYS_SerRegDataReceived( ABCC_SYS_SpiDataReceivedCbfType pnDataReceived  )

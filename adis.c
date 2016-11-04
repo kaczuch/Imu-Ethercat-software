@@ -15,7 +15,9 @@
 #include "user_adi.h"
 #include <inc/hw_types.h>
 #include "TM4C123GH6PM\support_lib.h"
+#include "ad_obj.h"
 
+int val= 0;
 	int kk;
 	bool wait=false;
 
@@ -52,10 +54,12 @@ void adis_io_init(){
 	//interrupt register
 	GPIOIntRegister(GPIO_PORTB_BASE,intPortBRoutine);
 	//Initializing GPIO
-	GPIOPinTypeGPIOInput(GPIO_PORTB_BASE,GPIO_PIN_4);
+	GPIOPinTypeGPIOInput(GPIO_PORTB_BASE,GPIO_PIN_4|GPIO_PIN_0);
+	GPIOPadConfigSet(GPIO_PORTB_BASE,GPIO_PIN_0,GPIO_STRENGTH_8MA,GPIO_PIN_TYPE_STD_WPU );
 	GPIOPinTypeGPIOOutput(GPIO_PORTB_BASE,GPIO_PIN_1);
 	//setting interrupt type
 	GPIOIntTypeSet(GPIO_PORTB_BASE,GPIO_PIN_4,GPIO_RISING_EDGE);
+	GPIOIntTypeSet(GPIO_PORTB_BASE,GPIO_PIN_0,GPIO_FALLING_EDGE);
 
 
 	//configuring spi connection to imu
@@ -74,15 +78,16 @@ void adis_io_init(){
 	                   GPIO_PIN_2);
 
 	//configuration of ssi
-	SSIConfigSetExpClk(SSI0_BASE, SysCtlClockGet(), SSI_FRF_MOTO_MODE_3,
-	                       SSI_MODE_MASTER, 1900000, 16);
+
+	SSIConfigSetExpClk(SSI0_BASE, CLOCK_RATE, SSI_FRF_MOTO_MODE_3,
+	                       SSI_MODE_MASTER, 1000000, 16);
 
 
 	// Enable the SSI0 module.
 	SSIEnable(SSI0_BASE);
 
 	//enabling interupt on D port
-	GPIOIntEnable(GPIO_PORTB_BASE,GPIO_PIN_4);
+	GPIOIntEnable(GPIO_PORTB_BASE,GPIO_PIN_4|GPIO_PIN_0);
 
 
 }
@@ -122,8 +127,8 @@ void adis_interupt()
 	iADI_Accel_X=adisValues[4]&0x3FFF;
 	iADI_Accel_Y=adisValues[5]&0x3FFF;
 	iADI_Accel_Z=adisValues[6]&0x3FFF;
-	//iADI_err=errCode;
-	stopCounting();
+	iADI_err=val;//errCode;
+	//stopCounting();
 	//@todo dopisz czas do œredniego czasu oczekiwania
 
 	AD_NewWrPd();

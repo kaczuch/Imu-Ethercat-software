@@ -31,8 +31,8 @@ double latency=0;
 int cycles=1;
 void init_anybus_hardware()
 {
-<<<<<<< Updated upstream
-=======
+
+	//epi config
 	GPIOPinConfigure(GPIO_PA6_EPI0S8);//A0
 	GPIOPinConfigure(GPIO_PA7_EPI0S9);//A1
 	GPIOPinConfigure(GPIO_PG1_EPI0S10);//A2
@@ -60,20 +60,19 @@ void init_anybus_hardware()
 
 	GPIOPinConfigure(GPIO_PP2_EPI0S29);//WE
 	GPIOPinConfigure(GPIO_PB3_EPI0S28);//OE
-	GPIOPinConfigure(GPIO_PL4_EPI0S26);//CS
+	GPIOPinConfigure(GPIO_PP3_EPI0S30);//CS GPIO_PL4_EPI0S26
 
 	GPIOPinTypeEPI(GPIO_PORTA_BASE,GPIO_PIN_6|GPIO_PIN_7);
 	GPIOPinTypeEPI(GPIO_PORTG_BASE,GPIO_PIN_0|GPIO_PIN_1);
 	GPIOPinTypeEPI(GPIO_PORTM_BASE,GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3);
-	GPIOPinTypeEPI(GPIO_PORTL_BASE,GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_4);
+	GPIOPinTypeEPI(GPIO_PORTL_BASE,GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3);
 	GPIOPinTypeEPI(GPIO_PORTQ_BASE,GPIO_PIN_0|GPIO_PIN_1);
 	GPIOPinTypeEPI(GPIO_PORTK_BASE,GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3);
 	GPIOPinTypeEPI(GPIO_PORTC_BASE,GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7);
-	GPIOPinTypeEPI(GPIO_PORTP_BASE,GPIO_PIN_2);
+	GPIOPinTypeEPI(GPIO_PORTP_BASE,GPIO_PIN_2|GPIO_PIN_3);
 	GPIOPinTypeEPI(GPIO_PORTB_BASE,GPIO_PIN_3);
 
 
->>>>>>> Stashed changes
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_EPI0);
 	//
 	// Set the EPI divider.
@@ -87,12 +86,15 @@ void init_anybus_hardware()
 	// Configure SDRAM mode.
 	//
 	EPIConfigHB8Set(EPI0_BASE, (EPI_HB8_MODE_ADDEMUX |
-			EPI_HB8_CSCFG_ALE_DUAL_CS //|EPI_HB8_WRWAIT_3|EPI_HB8_RDWAIT_3
-			|EPI_HB8_WORD_ACCESS), 255);
+			EPI_HB8_CSCFG_CS |EPI_HB8_WRWAIT_0|EPI_HB8_RDWAIT_0
+			), 4);
 	//
 	// Set the address map.
 	//
-	EPIAddressMapSet(EPI0_BASE, EPI_ADDR_PER_SIZE_64KB| EPI_ADDR_PER_BASE_A | EPI_ADDR_RAM_SIZE_64KB | EPI_ADDR_RAM_BASE_6);
+	EPIAddressMapSet(EPI0_BASE, EPI_ADDR_PER_SIZE_64KB| EPI_ADDR_PER_BASE_A );
+
+	//epi config end
+
 	//
 	// Wait for the EPI initialization to complete.
 	//
@@ -105,36 +107,20 @@ void init_anybus_hardware()
 	//
 	// At this point, the SDRAM is accessible and available for use.
 	//
-	/**
-	 * SSI 2 enabling sequence
-
-	SysCtlPeripheralEnable(SYSCTL_PERIPH_SSI2);
-	GPIOPinConfigure(GPIO_PB4_SSI2CLK);
-	GPIOPinConfigure(GPIO_PB5_SSI2FSS);
-	GPIOPinConfigure(GPIO_PB6_SSI2RX);
-	GPIOPinConfigure(GPIO_PB7_SSI2TX);
-	//giving ssi control ove pins
-	GPIOPinTypeSSI(GPIO_PORTB_BASE, GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 |
-	                   GPIO_PIN_7);
-	//configuration of ssi
-	SSIConfigSetExpClk(SSI2_BASE, SysCtlClockGet(), SSI_FRF_MOTO_MODE_3,
-	                       SSI_MODE_MASTER, 10000000, 8);
-	// Enable the SSI0 module.
-	SSIEnable(SSI2_BASE);
-	/**
-	 * GPIO configuration
-	 */
-
-	//GPIOIntRegister(GPIO_PORTB_BASE,anybus_interrupt_routine);
+	SysCtlDelay(8000);
 
 
 	GPIOPadConfigSet(GPIO_PORTA_BASE,GPIO_PIN_0,GPIO_STRENGTH_8MA,GPIO_PIN_TYPE_STD);
 
-	GPIOPinTypeGPIOInput(GPIO_PORTB_BASE,GPIO_PIN_0);
+//	GPIOPinTypeGPIOInput(GPIO_PORTB_BASE,GPIO_PIN_0);
 	GPIOPinTypeGPIOOutput(GPIO_PORTA_BASE,GPIO_PIN_0);
 
-	GPIOIntTypeSet(GPIO_PORTA_BASE,GPIO_PIN_6,GPIO_FALLING_EDGE);
+	//GPIOPinTypeGPIOInput(GPIO_PORTB_BASE,GPIO_PIN_0);
+	//GPIOIntRegister(GPIO_PORTB_BASE,intPortBRoutine);
+	//GPIOIntTypeSet(GPIO_PORTB_BASE,GPIO_PIN_0,GPIO_RISING_EDGE);
+	//GPIOIntEnable(GPIO_PORTB_BASE,GPIO_PIN_0);
 
+	Hw_Reset();
 
 }
 /*

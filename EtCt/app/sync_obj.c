@@ -21,8 +21,8 @@ const sync_ObjectType sync_sObject=
 sync_InstanceType sync_sInstance=
 {
 	1000,
-	0,
-	0,
+	100,
+	100,
 	100,
 	111,
 	1000,

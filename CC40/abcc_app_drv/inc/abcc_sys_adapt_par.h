@@ -286,7 +286,7 @@ EXTFUNC UINT8* ABCC_SYS_ParallelGetWrPdBuffer( void );
 **------------------------------------------------------------------------------
 */
 #ifdef ABCC_USER_MEMORY_MAPPED_ACCESS
-#define ABCC_SYS_WRITE_WRPD( buffer, size )
+#define ABCC_SYS_WRITE_WRPD( buffer, size ) ABCC_SYS_ParallelWrite( ABP_WRPDM_ADR_OFFSET, buffer, size )
 #else
 #ifdef ABCC_USER_DRV_PARALLEL_30
 #define ABCC_SYS_WRITE_WRPD( buffer, size ) ABCC_SYS_ParallelWrite( ABP_WRPDM_ADR_OFFSET, buffer, size )

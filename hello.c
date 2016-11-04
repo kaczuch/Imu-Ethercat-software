@@ -18,6 +18,8 @@
 #include "ad_obj.h"
 #include "abcc_td.h"
 
+
+
 /*******************************************************************************
 ** Constants
 ********************************************************************************
@@ -141,36 +143,20 @@ int main(void)
 #if defined(TARGET_IS_TM4C129_RA0) ||                                         \
 	defined(TARGET_IS_TM4C129_RA1) ||                                         \
     defined(TARGET_IS_TM4C129_RA2)
-    /*ui32SysClock = SysCtlClockFreqSet((SYSCTL_XTAL_25MHZ |
-                                       SYSCTL_OSC_MAIN |
-                                       SYSCTL_USE_OSC), 25000000);
-    */
     SysCtlClockFreqSet(SYSCTL_OSC_INT | SYSCTL_USE_PLL | SYSCTL_CFG_VCO_320,
-                     80000000);
+    		CLOCK_RATE);
 
 #else
     SysCtlClockSet(SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN |
                    SYSCTL_XTAL_16MHZ);
 #endif
-    int freq = SysCtlClockGet();
-    //
-    // Set up the serial console to use for displaying messages.  This is
-    // just for this example program and is not needed for SSI operation.
-    //
-    InitConsole();
 
-    //
-    // Display the setup on the console.
-    //
-    UARTprintf("SSI ->\n");
-    UARTprintf("  Mode: SPI\n");
-    UARTprintf("  Data: 8-bit\n\n freq %d",&freq);
 
     UINT32   lSw1;
     UINT32   lSw2;
     BOOL8    fPrintErrorMessage = TRUE;
     BOOL8    fQuit = FALSE;
-    /*
+        /*
      * initializing spi
      */
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
@@ -185,14 +171,17 @@ int main(void)
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOQ);
 	iADI_err=adis_init();
 	init_anybus_hardware();
+
 /*
 	UINT8 abBitReverseTable16[]={0x00, 0x00, 0x1F, 0x00, 0x00,0x00, 0x00, 0x01};
 	UINT32  aaa=CRC_Crc32(&abBitReverseTable16,8);
 	UARTprintf("SSI ->%d\n",&aaa);
 	*/
-	SysCtlDelay(200);
+	SysCtlDelay(800000);
+
     while(1)
     {
+
     	 switch( ABCCPowerState )
     	      {
     	      case ABCCPOWER_RESET:
@@ -229,7 +218,11 @@ int main(void)
     	    	  /*
     	    	   ** Check if an exception has occurred and prints out the exception code and info.
     	    	   */
-    	    	  if( ( ABCC_AnbState() == ABP_ANB_STATE_EXCEPTION ) ) /* An error has occurred. */
+    	    	  int ali= ABCC_AnbState();
+    	    	  if(ali==4){
+    	    		  int ali= ABCC_AnbState();
+    	    	  }
+    	    	  if( (  ali== ABP_ANB_STATE_EXCEPTION ) ) /* An error has occurred. */
     	    	  {
     	    		  if( fPrintErrorMessage )
     	    		  {

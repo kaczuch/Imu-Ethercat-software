@@ -60,7 +60,7 @@
 
 /*******************************************************************************
 **
-** ABCC operation mode constants
+** ABCC operating mode constants
 **
 ********************************************************************************
 */
@@ -93,7 +93,6 @@
 #define ABP_CTRL_M_BIT              0x40
 #define ABP_CTRL_R_BIT              0x20
 #define ABP_CTRL_A_BIT              0x10
-#define ABP_CTRL_G_BIT              0x01
 
 
 /*------------------------------------------------------------------------------
@@ -209,8 +208,9 @@ typedef enum ABP_MsgErrorCodeType
    ABP_ERR_SEG_BUF_OVERFLOW    = 0x10,    /* Segmentation buffer overflow     */
    ABP_ERR_VAL_TOO_HIGH        = 0x11,    /* Written data value is too high (ABCC40) */
    ABP_ERR_VAL_TOO_LOW         = 0x12,    /* Written data value is too low  (ABCC40) */
-   ABP_ERR_CONTROLLED_FROM_OTHER_CHANNEL = 0x13, /* NAK writes to “read process data” mapped attr. (ABCC40) */
-   ABP_ERR_MSG_CHANNEL_TOO_SMALL = 0x14,  /* Response does not fit          (ABCC40) */
+   ABP_ERR_CONTROLLED_FROM_OTHER_CHANNEL = 0x13, /* NAK writes to "read process data" mapped attr. (ABCC40) */
+   ABP_ERR_MSG_CHANNEL_TOO_SMALL = 0x14,  /* Response does not fit (ABCC40)   */
+   ABP_ERR_GENERAL_ERROR       = 0x15,    /* General error (ABCC40)           */
    ABP_ERR_OBJ_SPECIFIC        = 0xFF     /* Object specific error            */
 }
 ABP_MsgErrorCodeType;
@@ -377,19 +377,26 @@ ABP_AppStatusType;
 #define ABP_NW_TYPE_PDPV1                 0x0005  /* PROFIBUS DP-V1 */
 #define ABP_NW_TYPE_COP                   0x0020  /* CANopen */
 #define ABP_NW_TYPE_DEV                   0x0025  /* DeviceNet */
+#define ABP_NW_TYPE_RTU                   0x0045  /* Modbus-RTU */
 #define ABP_NW_TYPE_CNT                   0x0065  /* ControlNet */
+#define ABP_NW_TYPE_ETN_1P                0x0080  /* Modbus-TCP */
 #define ABP_NW_TYPE_PRT                   0x0084  /* PROFINET RT */
 #define ABP_NW_TYPE_EIP_1P                0x0085  /* EtherNet/IP */
 #define ABP_NW_TYPE_ECT                   0x0087  /* EtherCAT */
 #define ABP_NW_TYPE_PIR                   0x0089  /* PROFINET IRT */
 #define ABP_NW_TYPE_CCL                   0x0090  /* CC-Link */
+#define ABP_NW_TYPE_ETN_2P                0x0093  /* Modbus-TCP 2-Port */
 #define ABP_NW_TYPE_CPN                   0x0095  /* CompoNet */
 #define ABP_NW_TYPE_PRT_2P                0x0096  /* PROFINET RT 2-port */
+#define ABP_NW_TYPE_SRC3                  0x0098  /* SERCOS III */
+#define ABP_NW_TYPE_BMP                   0x0099  /* BACnet MS/TP */
+#define ABP_NW_TYPE_BIP                   0x009A  /* BACnet/IP */
 #define ABP_NW_TYPE_EIP_2P_BB             0x009B  /* EtherNet/IP 2-Port BB DLR */
 #define ABP_NW_TYPE_EIP_2P                0x009C  /* EtherNet/IP 2-Port */
+#define ABP_NW_TYPE_PIR_FO                0x009D  /* PROFINET IRT FO */
 #define ABP_NW_TYPE_EPL                   0x009F  /* POWERLINK */
-
-
+#define ABP_NW_TYPE_CFN                   0x009E  /* CC-Link IE Field Network */
+#define ABP_NW_TYPE_CET                   0x00A3  /* Common Ethernet */
 
 
 
@@ -603,6 +610,7 @@ ABP_LangType;
 #define ABP_OBJ_NUM_PNIOADD          15   /* PROFINET IO Additional Diag      */
 #define ABP_OBJ_NUM_DPV0DI           16   /* PROFIBUS DP-V0 Diagnostic        */
 #define ABP_OBJ_NUM_FUSM             17   /* Functional Safety Module         */
+#define ABP_OBJ_NUM_NWCFN            18   /* Network CC-Link IE Field Network */
 
 
 /*------------------------------------------------------------------------------
@@ -610,6 +618,7 @@ ABP_LangType;
 **------------------------------------------------------------------------------
 */
 
+#define ABP_OBJ_NUM_CFN             230   /* CC-Link IE Field Network         */
 #define ABP_OBJ_NUM_ER              231   /* Energy Reporting                 */
 #define ABP_OBJ_NUM_SAFE            232   /* Functional Safety                */
 #define ABP_OBJ_NUM_EPL             233   /* POWERLINK                        */
@@ -715,6 +724,7 @@ ABP_LangType;
 #define ABP_ANB_IA_BLACK_WHITE_LIST 18  /* ABCC40 */
 #define ABP_ANB_IA_NETWORK_TIME     19  /* ABCC40 */
 #define ABP_ANB_IA_FW_CUST_VERSION  20  /* ABCC40 */
+#define ABP_ANB_IA_ABIP_LICENSE     21  /* Anybus IP */
 
 /*------------------------------------------------------------------------------
 **
@@ -742,6 +752,7 @@ ABP_LangType;
 #define ABP_ANB_IA_BLACK_WHITE_LIST_DS    ( 12 * ABP_UINT16_SIZEOF ) /* ABCC40 */
 #define ABP_ANB_IA_NETWORK_TIME_DS        ABP_UINT64_SIZEOF          /* ABCC40 */
 #define ABP_ANB_IA_FW_CUST_VERSION_DS     ABP_UINT8_SIZEOF           /* ABCC40 */
+#define ABP_ANB_IA_ABIP_LICENSE_DS        ABP_ENUM_SIZEOF            /* Anybus IP */
 
 /*------------------------------------------------------------------------------
 **
@@ -787,21 +798,40 @@ ABP_AnbStateType;
 
 typedef enum ABP_AnbExceptionCodeType
 {
-   ABP_ANB_EXCPT_NONE               = 0x00, /* No exception                   */
-   ABP_ANB_EXCPT_APP_TO             = 0x01, /* Application timeout            */
-   ABP_ANB_EXCPT_INV_DEV_ADDR       = 0x02, /* Invalid device address         */
-   ABP_ANB_EXCPT_INV_COM_SETTINGS   = 0x03, /* Invalid communication settings */
-   ABP_ANB_EXCPT_MAJ_UNREC_APP_EVNT = 0x04, /* Major unrecoverable app event  */
-   ABP_ANB_EXCPT_WAIT_APP_RESET     = 0x05, /* Waiting for application reset  */
-   ABP_ANB_EXCPT_INV_PRD_CFG        = 0x06, /* Invalid process data config    */
-   ABP_ANB_EXCPT_INV_APP_RESPONSE   = 0x07, /* Invalid application response   */
-   ABP_ANB_EXCPT_NVS_CHECKSUM_ERROR = 0x08, /* NVS memory checksum error      */
-   ABP_ANB_EXCPT_FUSM_ERROR         = 0x09, /* Functional Safety Module error */
-   ABP_ANB_EXCPT_INSUFF_APPL_IMPL   = 0x0A, /* Insufficient application impl. */
+   ABP_ANB_EXCPT_NONE                = 0x00, /* No exception                   */
+   ABP_ANB_EXCPT_APP_TO              = 0x01, /* Application timeout            */
+   ABP_ANB_EXCPT_INV_DEV_ADDR        = 0x02, /* Invalid device address         */
+   ABP_ANB_EXCPT_INV_COM_SETTINGS    = 0x03, /* Invalid communication settings */
+   ABP_ANB_EXCPT_MAJ_UNREC_APP_EVNT  = 0x04, /* Major unrecoverable app event  */
+   ABP_ANB_EXCPT_WAIT_APP_RESET      = 0x05, /* Waiting for application reset  */
+   ABP_ANB_EXCPT_INV_PRD_CFG         = 0x06, /* Invalid process data config    */
+   ABP_ANB_EXCPT_INV_APP_RESPONSE    = 0x07, /* Invalid application response   */
+   ABP_ANB_EXCPT_NVS_CHECKSUM_ERROR  = 0x08, /* NVS memory checksum error      */
+   ABP_ANB_EXCPT_FUSM_ERROR          = 0x09, /* Functional Safety Module error */
+   ABP_ANB_EXCPT_INSUFF_APPL_IMPL    = 0x0A, /* Insufficient application impl. */
+   ABP_ANB_EXCPT_MISSING_SERIAL_NUM  = 0x0B, /* Missing serial number          */
+   ABP_ANB_EXCPT_CORRUPT_FILE_SYSTEM = 0x0C, /* File system is corrupt         */
 
-   ABP_ANB_EXCPT_NUM_CODES                  /* Number of exception codes      */
+   ABP_ANB_EXCPT_NUM_CODES                   /* Number of exception codes      */
 }
 ABP_AnbExceptionCodeType;
+
+
+/*------------------------------------------------------------------------------
+**
+** Anybus IP License.
+**
+**------------------------------------------------------------------------------
+*/
+
+typedef enum ABP_AbipLicenseType
+{
+   ABP_ANB_ABIP_LICENSE_NONE      =  0x00,
+   ABP_ANB_ABIP_LICENSE_TIME_BOMB =  0x01,
+   ABP_ANB_ABIP_LICENSE_STANDARD  =  0x02,
+   ABP_ANB_ABIP_LICENSE_EXTENDED  =  0x03
+}
+ABP_AbipLicenseType;
 
 
 /*------------------------------------------------------------------------------
@@ -838,8 +868,10 @@ ABP_AnbExceptionCodeType;
 **------------------------------------------------------------------------------
 */
 
-#define ABP_ANB_GPIO_CONFIG_STD     0x00     /* Standard GPIO                 */
-#define ABP_ANB_GPIO_CONFIG_EXT_LED 0x01     /* Extended LED functionality    */
+#define ABP_ANB_GPIO_CONFIG_STD           0x00  /* Standard GPIO              */
+#define ABP_ANB_GPIO_CONFIG_EXT_LED       0x01  /* Extended LED functionality */
+#define ABP_ANB_GPIO_CONFIG_RMII          0x02  /* RMII functionality         */
+#define ABP_ANB_GPIO_CONFIG_THREE_STATE   0x03  /* Three-state GPIO pins      */
 
 
 /*******************************************************************************
@@ -1187,6 +1219,7 @@ ABP_DiEventCodeType;
 #define ABP_APPD_IA_MIN_VALUE             7
 #define ABP_APPD_IA_DFLT_VALUE            8
 #define ABP_APPD_IA_NUM_SUB_ELEM          9
+#define ABP_APPD_IA_ELEM_NAME             10
 
 
 /*------------------------------------------------------------------------------
@@ -1273,6 +1306,8 @@ ABP_DiEventCodeType;
 #define ABP_APP_IA_SUP_LANG               2
 #define ABP_APP_IA_SER_NUM                3   /* ABCC40 */
 #define ABP_APP_IA_PAR_CRTL_SUM           4   /* ABCC40 */
+#define ABP_APP_IA_FW_AVAILABLE           5   /* ABCC40 */
+#define ABP_APP_IA_HW_CONF_ADDR           6   /* ABCC40 */
 
 
 /*------------------------------------------------------------------------------
@@ -1283,8 +1318,10 @@ ABP_DiEventCodeType;
 */
 
 #define ABP_APP_IA_CONFIGURED_DS          ABP_BOOL_SIZEOF
-#define ABP_APP_IA_SER_NUM_DS             ABP_UINT32_SIZEOF	 /* ABCC40 */
-#define ABP_APP_IA_PAR_CRTL_SUM_DS        ( 16 * ABP_UINT8_SIZEOF )  /* ABCC40 */
+#define ABP_APP_IA_SER_NUM_DS             ABP_UINT32_SIZEOF         /* ABCC40 */
+#define ABP_APP_IA_PAR_CRTL_SUM_DS        ( 16 * ABP_UINT8_SIZEOF ) /* ABCC40 */
+#define ABP_APP_IA_FW_AVAILABLE_DS        ABP_BOOL_SIZEOF           /* ABCC40 */
+#define ABP_APP_IA_HW_CONF_ADDR_DS        ABP_BOOL_SIZEOF           /* ABCC40 */
 
 
 /*------------------------------------------------------------------------------
@@ -1372,7 +1409,7 @@ PACKED_STRUCT ABP_Msg255Type;
 **
 ** ABP_MsgHeaderType
 **
-** Structure describing a message header.
+** Structure describing a message header for an 8 bit char platform
 **
 **------------------------------------------------------------------------------
 */
@@ -1391,16 +1428,39 @@ typedef struct ABP_MsgHeaderType
 }
 PACKED_STRUCT ABP_MsgHeaderType;
 
+
 /*------------------------------------------------------------------------------
 **
-** ABP_MsgType
+** ABP_MsgHeaderType16
 **
-** Structure describing a message.
+** Structure describing a message header for a 16 bit char platform
 **
 **------------------------------------------------------------------------------
 */
 
-typedef struct ABP_MsgType
+typedef struct ABP_MsgHeaderType16
+{
+   UINT16   iDataSize;
+   UINT16   iReserved;
+   UINT16   iSourceIdDestObj;
+   UINT16   iInstance;
+   UINT16   iCmdReserved;
+   UINT16   iCmdExt0CmdExt1;
+}
+PACKED_STRUCT ABP_MsgHeaderType16;
+
+
+
+/*------------------------------------------------------------------------------
+**
+** ABP_MsgType8
+**
+** Structure describing a message for an 8 bit char platform
+**
+**------------------------------------------------------------------------------
+*/
+
+typedef struct ABP_MsgType8
 {
    /*
    ** The message header part.
@@ -1414,8 +1474,47 @@ typedef struct ABP_MsgType
 
    UINT8    abData[ ABP_MAX_MSG_DATA_BYTES ];
 }
-PACKED_STRUCT ABP_MsgType;
+PACKED_STRUCT ABP_MsgType8;
 
+
+/*------------------------------------------------------------------------------
+**
+** ABP_MsgType16
+**
+** Structure describing a message for a 16 bit char platform
+**
+**------------------------------------------------------------------------------
+*/
+typedef struct ABP_MsgType16
+{
+   /*
+   ** The message header part.
+   */
+
+   ABP_MsgHeaderType16 sHeader;
+
+   /*
+   ** The message data.
+   */
+
+   UINT16    aiData[ ( ABP_MAX_MSG_DATA_BYTES + 1 ) >> 1 ];
+}
+PACKED_STRUCT ABP_MsgType16;
+
+/*------------------------------------------------------------------------------
+**
+** ABP_MsgType
+**
+** Typedef to ABP_MsgType8 or ABP_MsgType16 depending on platform.
+**
+**------------------------------------------------------------------------------
+*/
+
+#ifdef ABCC_SYS_16_BIT_CHAR
+typedef struct ABP_MsgType16 ABP_MsgType;
+#else
+typedef struct ABP_MsgType8 ABP_MsgType;
+#endif
 
 /*******************************************************************************
 **
@@ -1531,7 +1630,37 @@ PACKED_STRUCT ABP_MsgType;
 **------------------------------------------------------------------------------
 */
 
-#define ABP_SetMsgErrorResponse( psMsg, iMsgDataSize, eErr )                   \
+#ifdef ABCC_SYS_BIG_ENDIAN
+#define ABP_SetMsgErrorResponse16( psMsg, iMsgDataSize, eErr )                 \
+{                                                                              \
+   (psMsg)->sHeader.iCmdReserved   &= ~( (UINT16)ABP_MSG_HEADER_C_BIT << 8 );  \
+   (psMsg)->sHeader.iCmdReserved   |=  (UINT16)ABP_MSG_HEADER_E_BIT << 8;      \
+   (psMsg)->sHeader.iDataSize       =  ( (UINT16)(iMsgDataSize) << 8 ) | ( (UINT16)(iMsgDataSize) >> 8 ); \
+   (psMsg)->aiData[ 0 ]             =  ( (UINT16)(eErr) << 8 ) | ( (UINT16)(eErr) >> 8 ); \
+                                                                               \
+} /* end of ABP_SetMsgErrorResponse() */
+#else
+#define ABP_SetMsgErrorResponse16( psMsg, iMsgDataSize, eErr )                 \
+{                                                                              \
+   (psMsg)->sHeader.iCmdReserved   &= ~ABP_MSG_HEADER_C_BIT;                   \
+   (psMsg)->sHeader.iCmdReserved   |=  ABP_MSG_HEADER_E_BIT;                   \
+   (psMsg)->sHeader.iDataSize       =  (iMsgDataSize);                         \
+   (psMsg)->aiData[ 0 ]             =  (UINT16)(eErr);                         \
+                                                                               \
+} /* end of ABP_SetMsgErrorResponse() */
+#endif
+
+#ifdef ABCC_SYS_BIG_ENDIAN
+#define ABP_SetMsgErrorResponse8( psMsg, iMsgDataSize, eErr )                  \
+{                                                                              \
+   (psMsg)->sHeader.bCmd      &= ~ABP_MSG_HEADER_C_BIT;                        \
+   (psMsg)->sHeader.bCmd      |=  ABP_MSG_HEADER_E_BIT;                        \
+   (psMsg)->sHeader.iDataSize  =  ( (UINT16)(iMsgDataSize) << 8 ) | ( (UINT16)(iMsgDataSize) >> 8 ); \
+   (psMsg)->abData[ 0 ]        =  (UINT8)(eErr);                               \
+                                                                               \
+} /* end of ABP_SetMsgErrorResponse() */
+#else
+#define ABP_SetMsgErrorResponse8( psMsg, iMsgDataSize, eErr )                  \
 {                                                                              \
    (psMsg)->sHeader.bCmd      &= ~ABP_MSG_HEADER_C_BIT;                        \
    (psMsg)->sHeader.bCmd      |=  ABP_MSG_HEADER_E_BIT;                        \
@@ -1539,6 +1668,18 @@ PACKED_STRUCT ABP_MsgType;
    (psMsg)->abData[ 0 ]        =  (UINT8)(eErr);                               \
                                                                                \
 } /* end of ABP_SetMsgErrorResponse() */
+#endif
+
+
+#ifdef ABCC_SYS_16_BIT_CHAR
+#define ABP_SetMsgErrorResponse( psMsg, iMsgDataSize, eErr ) ABP_SetMsgErrorResponse16( psMsg, iMsgDataSize, eErr )
+#else
+#define ABP_SetMsgErrorResponse( psMsg, iMsgDataSize, eErr ) ABP_SetMsgErrorResponse8( psMsg, iMsgDataSize, eErr )
+#endif
+
+
+
+
 
 /*------------------------------------------------------------------------------
 **
@@ -1591,13 +1732,44 @@ PACKED_STRUCT ABP_MsgType;
 **------------------------------------------------------------------------------
 */
 
-#define ABP_SetMsgResponse( psMsg, iMsgDataSize )                              \
+#ifdef ABCC_SYS_BIG_ENDIAN
+#define ABP_SetMsgResponse16( psMsg, iMsgDataSize )                            \
+{                                                                              \
+   (psMsg)->sHeader.iCmdReserved &= ~( (UINT16)ABP_MSG_HEADER_C_BIT << 8 );    \
+   (psMsg)->sHeader.iDataSize  =  ( (UINT16)(iMsgDataSize) << 8 ) | ( (UINT16)(iMsgDataSize) >> 8 ); \
+                                                                               \
+} /* end of ABP_SetMsgResponse() */
+#else
+#define ABP_SetMsgResponse16( psMsg, iMsgDataSize )                            \
+{                                                                              \
+   (psMsg)->sHeader.iCmdReserved &= ~ABP_MSG_HEADER_C_BIT;                     \
+   (psMsg)->sHeader.iDataSize     = (iMsgDataSize);                            \
+                                                                               \
+} /* end of ABP_SetMsgResponse() */
+#endif
+
+#ifdef ABCC_SYS_BIG_ENDIAN
+#define ABP_SetMsgResponse8( psMsg, iMsgDataSize )                             \
+{                                                                              \
+   (psMsg)->sHeader.bCmd      &= ~ABP_MSG_HEADER_C_BIT;                        \
+   (psMsg)->sHeader.iDataSize  =  ( (UINT16)(iMsgDataSize) << 8 ) | ( (UINT16)(iMsgDataSize) >> 8 ); \
+                                                                               \
+} /* end of ABP_SetMsgResponse() */
+#else
+#define ABP_SetMsgResponse8( psMsg, iMsgDataSize )                             \
 {                                                                              \
    (psMsg)->sHeader.bCmd      &= ~ABP_MSG_HEADER_C_BIT;                        \
    (psMsg)->sHeader.iDataSize  =  (iMsgDataSize);                              \
                                                                                \
 } /* end of ABP_SetMsgResponse() */
+#endif
 
+
+#ifdef ABCC_SYS_16_BIT_CHAR
+#define ABP_SetMsgResponse( psMsg, iMsgDataSize ) ABP_SetMsgResponse16( psMsg, iMsgDataSize )
+#else
+#define ABP_SetMsgResponse( psMsg, iMsgDataSize ) ABP_SetMsgResponse8( psMsg, iMsgDataSize )
+#endif
 
 #endif  /* inclusion lock */
 

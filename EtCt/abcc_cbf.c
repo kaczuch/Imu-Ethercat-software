@@ -61,9 +61,9 @@ void ABCC_CbfReceiveMsg( ABP_MsgType* psReceivedMsg )
 /*   case ABP_OBJ_NUM_ASM:      *//* Assembly mapping object          */
 /*   case ABP_OBJ_NUM_MDD:      *//* Modular device                   */
 /*   case ABP_OBJ_NUM_CIPID:    *//* CIP Identity                     */
- 	 case ABP_OBJ_NUM_SYNC:    /* Sync                             */
- 		SYNC_ProcessCmdMsg(psReceivedMsg);
- 		break;
+// 	 case ABP_OBJ_NUM_SYNC:    /* Sync                             */
+// 		SYNC_ProcessCmdMsg(psReceivedMsg);
+// 		break;
 
    case ABP_OBJ_NUM_ECT:
 

@@ -70,6 +70,11 @@
 #define ABP_ETN_IA_ENABLE_ACD                  11
 #define ABP_ETN_IA_PORT1_STATE                 12
 #define ABP_ETN_IA_PORT2_STATE                 13
+#define ABP_ETN_IA_ENABLE_WEB_UPDATE           14
+#define ABP_ETN_IA_ENABLE_HICP_RESET           15
+#define ABP_ETN_IA_IP_CONFIGURATION            16
+#define ABP_ETN_IA_IP_ADDRESS_BYTE_0_2         17
+#define ABP_ETN_IA_ETH_PHY_CONFIG              18
 
 /*------------------------------------------------------------------------------
 **
@@ -92,6 +97,10 @@
 #define ABP_ETN_IA_ENABLE_ACD_DS                ABP_BOOL_SIZEOF
 #define ABP_ETN_IA_PORT1_STATE_DS               ABP_ENUM_SIZEOF
 #define ABP_ETN_IA_PORT2_STATE_DS               ABP_ENUM_SIZEOF
+#define ABP_ETN_IA_ENABLE_WEB_UPDATE_DS         ABP_BOOL_SIZEOF
+#define ABP_ETN_IA_ENABLE_HICP_RESET_DS         ABP_BOOL_SIZEOF
+#define ABP_ETN_IA_IP_CONFIGURATION_DS          ( 3 * ABP_UINT32_SIZEOF )
+#define ABP_ETN_IA_IP_ADDRESS_BYTE_0_2_DS       ( 3 * ABP_UINT8_SIZEOF )
 
 
 /*------------------------------------------------------------------------------
@@ -119,10 +128,23 @@ typedef enum ABP_EtnPortStateType
 {
    ABP_ETN_IA_PORT_STATE_ENABLE     = 0x00, /* Enable Ethernet port           */
    ABP_ETN_IA_PORT_STATE_DISABLE    = 0x01, /* Disable Ethernet port          */
+   ABP_ETN_IA_PORT_STATE_INACTIVATE = 0x02, /* Inactivate Ethernet port       */
 
    ABP_ETN_IA_PORT_STATE_NUM_VALUES         /* Number of port states          */
 }
 ABP_EtnPortStateType;
+
+
+/*------------------------------------------------------------------------------
+**
+** Ethernet PHY Configuration attribute bit definitions.
+**
+** ABP_ETN_IA_ETH_PHY_CFG_FALLBACK_DUPLEX - 0 = Half duplex, 1 = Full duplex
+**
+**------------------------------------------------------------------------------
+*/
+
+#define ABP_ETN_IA_ETH_PHY_CFG_FALLBACK_DUPLEX   0x0001
 
 #endif  /* inclusion lock */
 
