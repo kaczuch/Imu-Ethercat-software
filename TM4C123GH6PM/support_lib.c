@@ -24,8 +24,9 @@ void intPortBRoutine(){
 
 	if(isInterruptOnPin(GPIO_PORTB_BASE,GPIO_PIN_0)){
 		Hw_Int_disable();
-		ABCC_ISR();
 		Hw_Int_enable();
+		ABCC_ISR();
+
 	}
 	if(isInterruptOnPin(GPIO_PORTB_BASE,GPIO_PIN_1)){
 

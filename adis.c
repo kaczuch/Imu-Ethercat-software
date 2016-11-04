@@ -44,6 +44,7 @@ uint32_t adis_init(){
 	adis_io_init();
 	adis_reset();
 	//initTimer();
+
 	return adis_self_test();
 }
 /**
@@ -59,7 +60,7 @@ void adis_io_init(){
 	GPIOPinTypeGPIOOutput(GPIO_PORTB_BASE,GPIO_PIN_1);
 	//setting interrupt type
 	GPIOIntTypeSet(GPIO_PORTB_BASE,GPIO_PIN_4,GPIO_RISING_EDGE);
-	GPIOIntTypeSet(GPIO_PORTB_BASE,GPIO_PIN_0,GPIO_FALLING_EDGE);
+	GPIOIntTypeSet(GPIO_PORTB_BASE,GPIO_PIN_0,GPIO_LOW_LEVEL);
 
 
 	//configuring spi connection to imu
@@ -80,7 +81,7 @@ void adis_io_init(){
 	//configuration of ssi
 
 	SSIConfigSetExpClk(SSI0_BASE, CLOCK_RATE, SSI_FRF_MOTO_MODE_3,
-	                       SSI_MODE_MASTER, 1000000, 16);
+	                       SSI_MODE_MASTER, 900000, 16);
 
 
 	// Enable the SSI0 module.
@@ -96,7 +97,6 @@ void adis_io_init(){
  * */
 void adis_interupt()
 {
-	bool pin6=isInterruptOnPin(GPIO_PORTB_BASE,GPIO_PIN_4);
 
 	GPIOIntDisable(GPIO_PORTB_BASE,GPIO_PIN_4);
 	// becouse of buffers ned to be cleared on beginning of this function
@@ -199,6 +199,7 @@ uint32_t adis_self_test(){
 
 
 	GPIOIntEnable(GPIO_PORTB_BASE,GPIO_PIN_4);
+
 	return response;
 }
 /**

@@ -131,6 +131,7 @@ void SYNC_InstanceCommand(ABP_MsgType* psNewMessage )
 		case ABP_SYNC_IA_INPUT_CAPTURE:
 			ABCC_SYS_MemCpy( sync_sInstance.inCapture, psNewMessage->abData,ABP_SYNC_IA_INPUT_CAPTURE_DS );
 			ABP_SetMsgResponse( psNewMessage, 0 );
+			//TODO: timer on sync
 			break;
 
 		case ABP_SYNC_IA_OUTPUT_PROCESSING:
