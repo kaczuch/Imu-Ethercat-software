@@ -454,6 +454,12 @@ void AD_ProcObjectRequest( ABP_MsgType* psMsgBuffer )
                ABP_SetMsgErrorResponse( psMsgBuffer, 1, ABP_ERR_ATTR_NOT_GETABLE );
                break;
             }
+            //TODO: call function from pointer before load the value
+            if(psAdiEntry->PreReadVal!=NULL)
+            {
+
+            	(*psAdiEntry->PreReadVal)();
+            }
 
             psMsgBuffer->sHeader.iDataSize = (UINT8)AD_GetAdiValue( psAdiEntry, &psMsgBuffer->abData[ 0 ], NULL );
             break;
@@ -541,7 +547,7 @@ void AD_ProcObjectRequest( ABP_MsgType* psMsgBuffer )
 #endif
                default:
                   while( 1 ); /* Trap: The ADI type is not supported. */
-                  break;
+
                }
             }
             else
@@ -595,6 +601,13 @@ void AD_ProcObjectRequest( ABP_MsgType* psMsgBuffer )
                /*
                ** Success.
                */
+            	if(psAdiEntry->PostWriteVal!=NULL){
+            		if((*psAdiEntry->PostWriteVal)())
+					{
+						ABP_SetMsgErrorResponse( psMsgBuffer, 1, ABP_ERR_OUT_OF_RANGE );
+					}
+            	}
+            	//TODO: uruchomiæ funkcjê ze wskaŸnika po sprawdzeniu czy nie NULL
                psMsgBuffer->sHeader.iDataSize = 0;
             }
             break;
@@ -674,7 +687,7 @@ void AD_ProcObjectRequest( ABP_MsgType* psMsgBuffer )
                }
             break;
 
-               break;
+
          default:
             ABP_SetMsgErrorResponse( psMsgBuffer, 1, ABP_ERR_UNSUP_CMD );
             break;
@@ -807,7 +820,7 @@ UINT16 AD_GetAdiValue( const AD_AdiEntryType* psAdiEntry, UINT8* pabDataPtr, AD_
 #endif
    default:
       while( 1 ); /* Trap: Unknown data type. */
-      break;
+
    }
 
    return( iSize );
@@ -992,7 +1005,7 @@ INT16 AD_SetAdiValue( const AD_AdiEntryType* psAdiEntry, UINT8* pabDataPtr, AD_A
 #endif
          default:
             while(1);
-            break;
+
 
          }
       }

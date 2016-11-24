@@ -23,14 +23,25 @@
 #define	ADI_MINIMUM_ROTATION_SPEED -409.6 //deg/sec
 #define	ADI_MAXIMUM_ROTATION_SPEED 409.6 //deg/sec
 
-extern UINT16 iADI_Accel_X;
-extern UINT16 iADI_Accel_Y;
-extern UINT16 iADI_Accel_Z;
+extern INT16 iADI_Accel_X;
+extern INT16 iADI_Accel_Y;
+extern INT16 iADI_Accel_Z;
 
-extern UINT16 iADI_Rot_Speed_X;
-extern UINT16 iADI_Rot_Speed_Y;
-extern UINT16 iADI_Rot_Speed_Z;
-extern UINT16 iADI_err;
+extern INT16 iADI_Rot_Speed_X;
+extern INT16 iADI_Rot_Speed_Y;
+extern INT16 iADI_Rot_Speed_Z;
+extern UINT32 iADI_err;
+extern UINT32 sdo1;
+extern UINT32 GTemp[3];
+extern UINT32 GBias[3];
+extern UINT32 AccBias[3];
+extern UINT32 DFilter;
+extern UINT32 DRange;
+extern INT16 Autonull;
+extern INT16 FactoryCall;
+extern INT16 PreciseAutonull;
+extern UINT32 ID;
+extern UINT32 SerialNB;
 /*------------------------------------------------------------------------------
 ** Get Number of available ADI:s
 **------------------------------------------------------------------------------

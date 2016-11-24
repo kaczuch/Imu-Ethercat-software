@@ -269,6 +269,8 @@ typedef struct AD_AdiEntryType
 #endif
 
    } uData;
+   void (*PreReadVal)();
+   int (*PostWriteVal)();
 } AD_AdiEntryType;
 
 #if 0

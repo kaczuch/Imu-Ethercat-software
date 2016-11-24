@@ -116,7 +116,7 @@ static void PrintException( ABP_MsgType* psNewMessage )
 
       while(1);
 
-      break;
+
    }
  }
 //*****************************************************************************
@@ -171,6 +171,20 @@ int main(void)
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOQ);
 	iADI_err=adis_init();
 	init_anybus_hardware();
+	// test while loop
+	//SetOperatingMode(0);
+	//initTimer(CLOCK_RATE,10000000);
+	initTimer1(CLOCK_RATE,5005);// set pulse to 5us
+
+	//TimerEn();
+//	while(1)
+//	{
+//		if(!TimerSt())
+//		{
+//			//TimerEn();
+//
+//		}
+//	}
 
 /*
 	UINT8 abBitReverseTable16[]={0x00, 0x00, 0x1F, 0x00, 0x00,0x00, 0x00, 0x01};

@@ -248,7 +248,7 @@ static void US_ProcessRespMsg( ABP_MsgType* psNewMessage )
 
       while(1);
 
-      break;
+
    }
 
    /* Check if more should be done. */

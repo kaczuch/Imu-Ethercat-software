@@ -6,6 +6,7 @@
  */
 #include "sync_obj.h"
 #include "abp_sync.h"
+#include "adis.h"
 
 const sync_ObjectType sync_sObject=
 {
@@ -20,13 +21,13 @@ const sync_ObjectType sync_sObject=
 
 sync_InstanceType sync_sInstance=
 {
-	1000,
-	100,
-	100,
-	100,
-	111,
-	1000,
-	1,
+	1000000,
+	50000,
+	0,
+	0,
+	750000,
+	1000000,
+	0,
 	3
 
 };
@@ -119,43 +120,47 @@ void SYNC_InstanceCommand(ABP_MsgType* psNewMessage )
 		{
 		case ABP_SYNC_IA_CYCLE_TIME:
 
-			ABCC_SYS_MemCpy( sync_sInstance.cyclTime, psNewMessage->abData,ABP_SYNC_IA_CYCLE_TIME_DS );
+			ABCC_SYS_MemCpy( &(sync_sInstance.cyclTime), &(psNewMessage->abData),ABP_SYNC_IA_CYCLE_TIME_DS );
 			ABP_SetMsgResponse( psNewMessage, 0 );
 			break;
 
 		case ABP_SYNC_IA_OUTPUT_VALID:
-			ABCC_SYS_MemCpy( sync_sInstance.outValid, psNewMessage->abData,ABP_SYNC_IA_OUTPUT_VALID_DS );
+			ABCC_SYS_MemCpy( &(sync_sInstance.outValid), &(psNewMessage->abData),ABP_SYNC_IA_OUTPUT_VALID_DS );
 			ABP_SetMsgResponse( psNewMessage, 0 );
 			break;
 
 		case ABP_SYNC_IA_INPUT_CAPTURE:
-			ABCC_SYS_MemCpy( sync_sInstance.inCapture, psNewMessage->abData,ABP_SYNC_IA_INPUT_CAPTURE_DS );
+			ABCC_SYS_MemCpy( &(sync_sInstance.inCapture),&( psNewMessage->abData),ABP_SYNC_IA_INPUT_CAPTURE_DS );
 			ABP_SetMsgResponse( psNewMessage, 0 );
-			//TODO: timer on sync
+			if(sync_sInstance.inCapture!=0){
+				initTimer(CLOCK_RATE,sync_sInstance.inCapture);
+			}
 			break;
 
 		case ABP_SYNC_IA_OUTPUT_PROCESSING:
-			ABCC_SYS_MemCpy( sync_sInstance.outProces, psNewMessage->abData,ABP_SYNC_IA_OUTPUT_PROCESSING_DS );
+			ABCC_SYS_MemCpy( &(sync_sInstance.outProces), &(psNewMessage->abData),ABP_SYNC_IA_OUTPUT_PROCESSING_DS );
 			ABP_SetMsgResponse( psNewMessage, 0 );
 			break;
 
 		case ABP_SYNC_IA_INPUT_PROCESSING:
-			ABCC_SYS_MemCpy( sync_sInstance.inProces, psNewMessage->abData,ABP_SYNC_IA_INPUT_PROCESSING_DS );
+			ABCC_SYS_MemCpy( &(sync_sInstance.inProces),&( psNewMessage->abData),ABP_SYNC_IA_INPUT_PROCESSING_DS );
 			ABP_SetMsgResponse( psNewMessage, 0 );
 			break;
 
 		case ABP_SYNC_IA_MIN_CYCLE_TIME:
-			ABCC_SYS_MemCpy( sync_sInstance.minCyclTime, psNewMessage->abData,ABP_SYNC_IA_MIN_CYCLE_TIME_DS );
+			ABCC_SYS_MemCpy( &(sync_sInstance.minCyclTime),&( psNewMessage->abData),ABP_SYNC_IA_MIN_CYCLE_TIME_DS );
 			ABP_SetMsgResponse( psNewMessage, 0 );
 			break;
 
 		case ABP_SYNC_IA_SYNC_MODE:
-			ABCC_SYS_MemCpy( sync_sInstance.syncMode, psNewMessage->abData,ABP_SYNC_IA_SYNC_MODE_DS );
+			ABCC_SYS_MemCpy( &(sync_sInstance.syncMode),&( psNewMessage->abData),ABP_SYNC_IA_SYNC_MODE_DS );
+			SetOperatingMode(sync_sInstance.syncMode);
 			ABP_SetMsgResponse( psNewMessage, 0 );
+			//TODO: change type of measurement
 			break;
 
 		case ABP_SYNC_IA_SUPPORTED_SYNC_MODES:
-			ABCC_SYS_MemCpy( sync_sInstance.supSyncMode, psNewMessage->abData,ABP_SYNC_IA_SUPPORTED_SYNC_MODES_DS);
+			ABCC_SYS_MemCpy( &(sync_sInstance.supSyncMode), &(psNewMessage->abData),ABP_SYNC_IA_SUPPORTED_SYNC_MODES_DS);
 			ABP_SetMsgResponse( psNewMessage, 0 );
 
 			break;

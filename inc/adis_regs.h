@@ -65,6 +65,7 @@
 #define ADIS16400_AUX_DAC   0x4A /* Auxiliary DAC data */
 
 #define ADIS16400_PRODUCT_ID 0x56 /* Product identifier */
+#define ADIS16400_SERIAL_NUMBER 0x58 /* Serial number */
 
 #define ADIS16400_ERROR_ACTIVE                  (1<<14)
 #define ADIS16400_NEW_DATA                      (1<<14)
