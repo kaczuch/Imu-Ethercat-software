@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include "adis_regs.h"
-#include "abcc_hardware_implementation.h"
+#include "hardware_utils.h"
 
 #define ADIS_OP_MODE_AUTO 0
 #define ADIS_OP_MODE_MANUAL 1
@@ -13,23 +13,11 @@
 
 bool interr;
 
-
 uint32_t adis_init();
-void adis_io_init();
 void adis_interupt();
-
 uint32_t adis_self_test();
 void adis_reset();
-void initTimer(uint32_t ui32SysClock,uint32_t timeNs);
-void initTimer1(uint32_t ui32SysClock,uint32_t timeNs);
-void initTimer2Enable(uint32_t ui32SysClock);
-void TimerInt();
-void TimCLKTimeout();
 int SetOperatingMode(UINT16 mode);
-void SyncInt();
-void TimerEn();
-int TimerSt();
-void ReqMeasure();
 void ReadGTemp();
 void ReadGBias();
 int WriteGBias();

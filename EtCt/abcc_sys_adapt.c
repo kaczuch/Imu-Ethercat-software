@@ -12,7 +12,7 @@
 /*
  * Hardware implementation
  */
-#include "abcc_hardware_implementation.h"
+#include "hardware_utils.h"
 /**
  * anybus include files
  */
@@ -26,7 +26,7 @@ static UINT8    sys_abWriteProcessData[ ABCC_USER_MAX_PROCESS_DATA_SIZE ]; /* Pr
 BOOL ABCC_SYS_Init( void )
 {
 	/**
-	 * enable ports
+	 * Done somwere else 
 	 */
 
    return TRUE;
@@ -47,26 +47,6 @@ unsigned __stdcall ISR( void *pMyID )
 */
 #endif
 
-//static UINT8 sys_bOpmode = ABCC_USER_DRV_PARALLEL;
-/*
-static ABCC_SYS_SpiDataReceivedCbfType pnDataReadyCbf;
-
-
-
-void ABCC_SYS_SpiRegDataReceived( ABCC_SYS_SpiDataReceivedCbfType pnDataReceived  )
-{
-	pnDataReadyCbf = pnDataReceived;
-}
-void ABCC_SYS_SpiSendReceive( void* pxSendDataBuffer, void* pxReceiveDataBuffer, UINT16 iLength )
-{
-	ABCC_SYS_UseCritical();
-	ABCC_SYS_EnterCritical();
-	anybus_SPI_SEND_Receive(pxSendDataBuffer,pxReceiveDataBuffer,iLength);
-	ABCC_SYS_ExitCritical();
-	pnDataReadyCbf();
-}
-
-*/
 void ABCC_SYS_ParallelRead( UINT16 iMemOffset, UINT8* pbData, UINT16 iLength )
 {
 	memcpy(pbData, (void*)(ABCC_USER_PARALLEL_BASE_ADR +iMemOffset), iLength);
@@ -113,13 +93,15 @@ UINT8 ABCC_SYS_GetOpmode( void )
 
 void ABCC_SYS_HWReset( void )
 {
+		GPIOPinWrite(GPIO_PORTA_BASE,GPIO_PIN_0,0);
+
 	Hw_Reset();
 }
 
 
 void ABCC_SYS_HWReleaseReset( void )
 {
-	Hw_Release_Reset();
+	GPIOPinWrite(GPIO_PORTA_BASE,GPIO_PIN_0,GPIO_PIN_0);
 }
 
 UINT8 ABCC_SYS_ReadModuleId( void )
@@ -147,34 +129,23 @@ UINT8* ABCC_SYS_ParallelGetWrPdBuffer( void )
    return sys_abWriteProcessData;
 }
 
-/*
-void ABCC_SYS_SerRegDataReceived( ABCC_SYS_SpiDataReceivedCbfType pnDataReceived  )
-{
-}
-
-
-void ABCC_SYS_SerSendReceive( UINT8* pbTxDataBuffer, UINT8* pbRxDataBuffer, UINT16 iTxSize, UINT16 iRxSize )
-{
-}
-*/
-
 void ABCC_SYS_SerRestart( void )
 {
 }
 
-
 void ABCC_SYS_AbccInterruptEnable( void )
 {
 #ifdef ABCC_USER_INT_ENABLED
-	Hw_Int_enable();
+	GPIOIntEnable(GPIO_PORTB_BASE,GPIO_PIN_0);
+
 #endif
 }
-
 
 void ABCC_SYS_AbccInterruptDisable( void )
 {
 #ifdef ABCC_USER_INT_ENABLED
-	Hw_Int_disable();
+	GPIOIntDisable(GPIO_PORTB_BASE,GPIO_PIN_0);
+	GPIOIntClear(GPIO_PORTB_BASE,GPIO_PIN_0);
 #endif
 }
 /**
@@ -186,9 +157,9 @@ void ABCC_SYS_UseCriticalImpl( void )
 
 void ABCC_SYS_EnterCriticalImpl( void )
 {
-	Hw_Int_disable();
+	ABCC_SYS_AbccInterruptDisable();
 }
 void ABCC_SYS_ExitCriticalImpl( void )
 {
-	Hw_Int_enable();
+	ABCC_SYS_AbccInterruptEnable();
 }

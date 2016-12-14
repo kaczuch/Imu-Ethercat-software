@@ -172,25 +172,8 @@ int main(void)
 	iADI_err=adis_init();
 	init_anybus_hardware();
 	// test while loop
-	//SetOperatingMode(0);
-	//initTimer(CLOCK_RATE,10000000);
 	initTimer1(CLOCK_RATE,5005);// set pulse to 5us
 
-	//TimerEn();
-//	while(1)
-//	{
-//		if(!TimerSt())
-//		{
-//			//TimerEn();
-//
-//		}
-//	}
-
-/*
-	UINT8 abBitReverseTable16[]={0x00, 0x00, 0x1F, 0x00, 0x00,0x00, 0x00, 0x01};
-	UINT32  aaa=CRC_Crc32(&abBitReverseTable16,8);
-	UARTprintf("SSI ->%d\n",&aaa);
-	*/
 	SysCtlDelay(800000);
 
     while(1)
