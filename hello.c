@@ -8,8 +8,7 @@
 #include "driverlib/uart.h"
 #include "utils/uartstdio.h"
 #include "adis.h"
-#include "abcc_hardware_implementation.h"
-
+#include "hardware_utils.h"
 #include "abcc_user_def.h"
 #include "user_setup.h"
 #include "user_adi.h"
@@ -131,7 +130,7 @@ int main(void)
 #if defined(TARGET_IS_TM4C129_RA0) ||                                         \
 	defined(TARGET_IS_TM4C129_RA1) ||                                         \
     defined(TARGET_IS_TM4C129_RA2)
-	uint32_t ui32SysClock;
+
 #endif
 
 
@@ -152,10 +151,8 @@ int main(void)
 #endif
 
 
-    UINT32   lSw1;
-    UINT32   lSw2;
     BOOL8    fPrintErrorMessage = TRUE;
-    BOOL8    fQuit = FALSE;
+
         /*
      * initializing spi
      */
@@ -169,8 +166,10 @@ int main(void)
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOM);
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOP);
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOQ);
+	io_init();
 	iADI_err=adis_init();
-	init_anybus_hardware();
+
+
 	// test while loop
 	initTimer1(CLOCK_RATE,5005);// set pulse to 5us
 

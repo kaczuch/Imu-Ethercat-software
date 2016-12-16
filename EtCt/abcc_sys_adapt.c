@@ -95,7 +95,7 @@ void ABCC_SYS_HWReset( void )
 {
 		GPIOPinWrite(GPIO_PORTA_BASE,GPIO_PIN_0,0);
 
-	Hw_Reset();
+
 }
 
 

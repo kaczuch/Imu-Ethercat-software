@@ -13,7 +13,6 @@
 #include "adis.h"
 #include "user_adi.h"
 #include <inc/hw_types.h>
-#include "TM4C123GH6PM\support_lib.h"
 #include "ad_obj.h"
 #include "sync_obj.h"
 #include "inc/hw_timer.h"

@@ -13,7 +13,6 @@
 #include "adis.h"
 #include "user_adi.h"
 #include <inc/hw_types.h>
-#include "TM4C123GH6PM\support_lib.h"
 #include "ad_obj.h"
 #include "sync_obj.h"
 #include "inc/hw_timer.h"
@@ -65,9 +64,9 @@ void adis_interupt()
 	// becouse of buffers ned to be cleared on beginning of this function
 	GPIOIntClear(GPIO_PORTB_BASE,GPIO_PIN_4);
 	//read all the data
-	uint32_t response;
 
-	int i,j;
+
+	int i;
 	int iLength=7;
 
 	for( i=0;  i<iLength;++i)

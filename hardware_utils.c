@@ -143,7 +143,7 @@ void io_init(){
 
 	GPIOPadConfigSet(GPIO_PORTA_BASE,GPIO_PIN_0,GPIO_STRENGTH_8MA,GPIO_PIN_TYPE_STD);
 	GPIOPinTypeGPIOOutput(GPIO_PORTA_BASE,GPIO_PIN_0);
-	Hw_Reset();
+	ABCC_SYS_HWReset();
 
 }
 void initTimer(uint32_t ui32SysClock,uint32_t timeNs)
@@ -213,21 +213,13 @@ void SyncInt()
 	ReqMeasure();
 	GPIOIntEnable(GPIO_PORTA_BASE,GPIO_PIN_1);
 }
-void TimerEn()
-{
-	TimerEnable(TIMER0_BASE, TIMER_A);
-	timeraa=1;
-}
-int TimerSt()
-{
-	return timeraa;
-}
+
 void ReqMeasure()
 {
 //	initTimer2Enable(CLOCK_RATE); No need to measre execution time anymore
 	GPIOPinWrite(GPIO_PORTB_BASE,GPIO_PIN_2,GPIO_PIN_2);
 	TimerEnable(TIMER1_BASE, TIMER_A);
-	reqMeasure=1;
+
 }
 
 bool isInterruptOnPin(uint32_t port,uint32_t PinNr){
@@ -244,8 +236,8 @@ bool isInterruptOnPin(uint32_t port,uint32_t PinNr){
 void intPortBRoutine(){
 
 	if(isInterruptOnPin(GPIO_PORTB_BASE,GPIO_PIN_0)){
-		Hw_Int_disable();
-		Hw_Int_enable();
+		ABCC_SYS_AbccInterruptDisable();
+		ABCC_SYS_AbccInterruptEnable();
 		ABCC_ISR();
 
 	}
