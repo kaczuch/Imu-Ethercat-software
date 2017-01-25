@@ -170,8 +170,6 @@ int main(void)
 	iADI_err=adis_init();
 
 
-	// test while loop
-	initTimer1(CLOCK_RATE,5005);// set pulse to 5us
 
 	SysCtlDelay(800000);
 
@@ -256,24 +254,6 @@ int main(void)
     	      default:
     	    	  break;
     	      }
-
-    	 /*
-    	 uint32_t response;
-    	 uint32_t data = 128;
-    	 		SSIDataPut(SSI2_BASE,data);
-    	 		while(SSIBusy(SSI2_BASE))
-    	 		{
-    	 		}
-    	 		SSIDataGet(SSI2_BASE, &response);
-    	 		*/
-/*
-    	if(interr==true)
-    	{
-    		UARTprintf(" Interrupt! Weeee \n");
-    		interr=false;
-    	}
-    	SysCtlDelay(2000);
-*/
 
     }
     return(0);

@@ -241,7 +241,7 @@ void intPortBRoutine(){
 		ABCC_ISR();
 
 	}
-	if(isInterruptOnPin(GPIO_PORTB_BASE,GPIO_PIN_1)){
+	/*if(isInterruptOnPin(GPIO_PORTB_BASE,GPIO_PIN_1)){
 
 	}
 	if(isInterruptOnPin(GPIO_PORTB_BASE,GPIO_PIN_2)){
@@ -249,10 +249,10 @@ void intPortBRoutine(){
 	}
 	if(isInterruptOnPin(GPIO_PORTB_BASE,GPIO_PIN_3)){
 
-	}
+	}*/
 	if(isInterruptOnPin(GPIO_PORTB_BASE,GPIO_PIN_4)){
 		adis_interupt();
-	}
+	}/*
 	if(isInterruptOnPin(GPIO_PORTB_BASE,GPIO_PIN_5)){
 
 	}
@@ -261,6 +261,6 @@ void intPortBRoutine(){
 	}
 	if(isInterruptOnPin(GPIO_PORTB_BASE,GPIO_PIN_7)){
 
-	}
+	}*/
 
 }
